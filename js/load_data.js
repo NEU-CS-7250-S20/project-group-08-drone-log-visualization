@@ -5,6 +5,18 @@ function parseFloatWithCommaDecimal(string) {
     return parseFloat(tmp);
 }
 
+function subsample(data, num) {
+    // subsample data
+    let stride = Math.round(data.length / num);
+    let newData = [];
+
+    for (i = 0; i < num; i++) {
+        newData.push(data[i * stride]);
+    }
+
+    return newData;
+}
+
 function parseT02(d) {
     // parse a single line of telemetry 2
     return {
