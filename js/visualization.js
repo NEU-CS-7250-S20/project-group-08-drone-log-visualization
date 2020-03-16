@@ -22,6 +22,7 @@
         let avgLon = (lon.reduce((prev, cur) => cur += prev)) / lon.length;
 
         // https://bl.ocks.org/mbostock/899711
+        // https://stackoverflow.com/questions/35703407/on-a-google-maps-overlay-how-do-i-create-lines-between-svg-elements-in-d3
         let map = new google.maps.Map(d3.select("#map").node(), {
             zoom: 16,
             center: new google.maps.LatLng(avgLat, avgLon),
@@ -40,6 +41,8 @@
                 let projection = this.getProjection(),
                 padding = 10;
 
+                layer.selectAll("svg").remove();
+
                 let marker = layer.selectAll("svg")
                     .data(subsample(t02, 150))
                     .each(transform) // update existing markers
@@ -47,25 +50,46 @@
                     .each(transform)
                     .attr("class", "marker");
 
+                // this works as long as
+                // 1. tmpPos1.x is before tmpPos2.x and so on
+                // 2. both of the points are inside of the current view
+                /*
+                let tmpPos1 = latLongToPos(t02[100]);
+                let tmpPos2 = latLongToPos(t02[2000]);
+
+                let line = layer.append("svg")
+                    .style("left", tmpPos1.x + "px")
+                    .style("right", tmpPos1.y + "px")
+                    .style("width", (tmpPos2.x - tmpPos1.x) + "px")
+                    .style("height", (tmpPos2.y - tmpPos1.y) + "px")
+                    .append("line")
+                    .attr("x1", tmpPos1.x)
+                    .attr("x2", tmpPos2.x)
+                    .attr("y1", tmpPos1.y)
+                    .attr("y2", tmpPos2.y)
+                    .style("fill", "none")
+                    .style("stroke", "steelblue");
+                 */
+
                 // Add a circle.
                 marker.append("circle")
                     .attr("r", 4.5)
                     .attr("cx", padding)
                     .attr("cy", padding);
 
-                // Add a label.
-                marker.append("text")
-                    .attr("x", padding + 7)
-                    .attr("y", padding)
-                    .attr("dy", ".31em")
-                    .text(function(d) { return d.key; });
+                function latLongToPos(d) {
+                    let p = new google.maps.LatLng(d.posLat, d.posLon);
+                    p = projection.fromLatLngToDivPixel(p);
+                    p.x = p.x - padding;
+                    p.y = p.y - padding;
+                    return p;
+                }
 
                 function transform(d) {
-                    d = new google.maps.LatLng(d.posLat, d.posLon);
-                    d = projection.fromLatLngToDivPixel(d);
+                    d = latLongToPos(d);
                     return d3.select(this)
-                    .style("left", (d.x - padding) + "px")
-                    .style("top", (d.y - padding) + "px");
+                    .style("left", d.x + "px")
+                    .style("top", d.y + "px");
                 }
             };
         };
