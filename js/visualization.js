@@ -21,6 +21,15 @@
         let avgLat = (lat.reduce((prev, cur) => cur += prev)) / lat.length;
         let avgLon = (lon.reduce((prev, cur) => cur += prev)) / lon.length;
 
+        let num = 2;
+        let t02Subset = subsample(t02, num);
+        t02Subset = t02Subset.reverse();
+
+        let links = [];
+        for (i = 0; i < num - 1; i++) {
+            links.push(i);
+        }
+
         // https://bl.ocks.org/mbostock/899711
         // https://stackoverflow.com/questions/35703407/on-a-google-maps-overlay-how-do-i-create-lines-between-svg-elements-in-d3
         let map = new google.maps.Map(d3.select("#map").node(), {
@@ -43,8 +52,8 @@
 
                 layer.selectAll("svg").remove();
 
-                let marker = layer.selectAll("svg")
-                    .data(subsample(t02, 150))
+                let marker = layer.selectAll("svg.markers")
+                    .data(t02Subset)
                     .each(transform) // update existing markers
                     .enter().append("svg")
                     .each(transform)
@@ -77,20 +86,66 @@
                     .attr("cx", padding)
                     .attr("cy", padding);
 
+                // add lines
+                let line = layer.selectAll("svg.lines")
+                    .data(links)
+                    .each(transformLinkSvg)
+                    .enter().append("svg")
+                    .each(transformLinkSvg);
+
+                line.append("line")
+                    .each(transformLinkLine);
+                    //.style('fill', 'none')
+                    //.style('stroke', 'steelblue');
+
+                console.log(marker);
+                console.log(line);
+                console.log("");
+
                 function latLongToPos(d) {
                     let p = new google.maps.LatLng(d.posLat, d.posLon);
-                    p = projection.fromLatLngToDivPixel(p);
+                    return projection.fromLatLngToDivPixel(p);
+                }
+
+                function latLongToPosSubtractPadding(d) {
+                    p = latLongToPos(d);
                     p.x = p.x - padding;
                     p.y = p.y - padding;
                     return p;
                 }
 
                 function transform(d) {
-                    d = latLongToPos(d);
+                    d = latLongToPosSubtractPadding(d);
                     return d3.select(this)
                     .style("left", d.x + "px")
                     .style("top", d.y + "px");
                 }
+
+                function transformLinkSvg(d) {
+                    let p1 = latLongToPos(t02Subset[d]),
+                    p2 = latLongToPos(t02Subset[d + 1]);
+
+                    d3.select(this)
+                    .style("left", p1.x + "px")
+                    .style("top", p2.y + "px")
+                    .style("width", (p2.x - p1.x) + "px")
+                    .style("height", (p1.y - p2.y) + "px")
+                    .style('fill', 'none')
+                    .style('stroke', 'steelblue');
+                }
+
+                function transformLinkLine(d) {
+
+                    let parent = d3.select(this.parentNode);
+
+                    d3.select(this)
+                        .attr("x1", parent.style("width"))
+                        .attr("y1", 0)
+                        .attr("x2", 0)
+                        .attr("y2", parent.style("height"));
+
+                }
+
             };
         };
 
