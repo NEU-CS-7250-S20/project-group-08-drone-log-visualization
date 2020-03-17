@@ -56,6 +56,8 @@
                 let projection = this.getProjection(),
                 padding = 10;
 
+                layer.selectAll("svg").remove();
+
                 // add marker SVG and markers
                 let marker = layer.selectAll("svg.markers")
                     .data(t02Subset)
