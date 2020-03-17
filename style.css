@@ -101,7 +101,7 @@ html, body, #map {
 }
 
 .path circle {
-	fill: none;
+	fill: red;
 	stroke: black;
 	stroke-width: 0.5px;
 }

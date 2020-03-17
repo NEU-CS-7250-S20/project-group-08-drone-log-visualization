@@ -130,7 +130,8 @@
                         .style("width", width + "px")
                         .style("height", height + "px")
                         .style('fill', 'none')
-                        .style('stroke', 'steelblue');
+                        .style("stroke-width", "2px")
+                        .style('stroke', 'red');
                 }
 
                 function transformLinkLine(d) {
