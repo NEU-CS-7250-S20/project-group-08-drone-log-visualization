@@ -23,7 +23,7 @@
 
         // subsample GPS coordinates, we have trouble displaying more than 150 at the same time
         // we will probably switch from Google Maps API to leaflet or something similar
-        let num = 150;
+        let num = 1000;
         let t02Subset = subsample(t02, num);
         t02Subset = t02Subset.reverse();
 
@@ -54,7 +54,8 @@
             overlay.draw = function() {
 
                 let projection = this.getProjection(),
-                padding = 10;
+                    padding = 10,
+                    paddingForLines = 10;
 
                 layer.selectAll("svg").remove();
 
@@ -111,19 +112,19 @@
                     let left, top, width, height;
 
                     if (p1.x < p2.x) {
-                        left = p1.x;
-                        width = p2.x - p1.x;
+                        left = p1.x - paddingForLines;
+                        width = p2.x - p1.x + 2 * paddingForLines;
                     } else {
-                        left = p2.x;
-                        width = p1.x - p2.x;
+                        left = p2.x - paddingForLines;
+                        width = p1.x - p2.x + 2 * paddingForLines;
                     }
 
                     if (p1.y < p2.y) {
-                        top = p1.y;
-                        height = p2.y - p1.y;
+                        top = p1.y - paddingForLines;
+                        height = p2.y - p1.y + 2 * paddingForLines;
                     } else {
-                        top = p2.y;
-                        height = p1.y - p2.y;
+                        top = p2.y - paddingForLines;
+                        height = p1.y - p2.y + 2 * paddingForLines;
                     }
 
                     d3.select(this)
@@ -144,19 +145,19 @@
                     let x1, y1, x2, y2;
 
                     if (p1.x < p2.x) {
-                        x1 = p2.x - p1.x;
-                        x2 = 0;
+                        x1 = p2.x - p1.x + paddingForLines;
+                        x2 = paddingForLines;
                     } else {
-                        x1 = 0;
-                        x2 = p1.x - p2.x;
+                        x1 = paddingForLines;
+                        x2 = p1.x - p2.x + paddingForLines;
                     }
 
                     if (p1.y < p2.y) {
-                        y1 = p2.y - p1.y;
-                        y2 = 0;
+                        y1 = p2.y - p1.y + paddingForLines;
+                        y2 = paddingForLines;
                     } else {
-                        y1 = 0;
-                        y2 = p1.y - p2.y;
+                        y1 = paddingForLines;
+                        y2 = p1.y - p2.y + paddingForLines;
                     }
 
                     d3.select(this)
