@@ -67,7 +67,7 @@
                     .attr("class", "marker");
 
                 marker.append("circle")
-                    .attr("r", 3.5)
+                    .attr("r", 1)
                     .attr("cx", padding)
                     .attr("cy", padding);
 
