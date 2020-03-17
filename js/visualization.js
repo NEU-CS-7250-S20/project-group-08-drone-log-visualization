@@ -3,13 +3,13 @@
     const delimiter = ";";
 
     // load telemetry data
-    // https://stackoverflow.com/questions/21842384/importing-data-from-multiple-csv-files-in-d3
     Promise.all([
         d3.dsv(delimiter, "data/sn11401003-2018-09-11-14-13-ses-00.T02.csv", parseT02),
         d3.dsv(delimiter, "data/sn11401003-2018-09-11-14-13-ses-00.T15.csv", parseT15),
         d3.dsv(delimiter, "data/sn11401003-2018-09-11-14-13-ses-00.T16.csv", parseT16),
     ]).then(function(files) {
 
+        // get the average longitude and latitude; this will be our starting point for the map *for now*
         let t02 = files[0];
         let lat = [], lon = [];
 
@@ -21,37 +21,42 @@
         let avgLat = (lat.reduce((prev, cur) => cur += prev)) / lat.length;
         let avgLon = (lon.reduce((prev, cur) => cur += prev)) / lon.length;
 
-        let num = 2;
+        // subsample GPS coordinates, we have trouble displaying more than 150 at the same time
+        // we will probably switch from Google Maps API to leaflet or something similar
+        let num = 150;
         let t02Subset = subsample(t02, num);
         t02Subset = t02Subset.reverse();
 
+        // simple array that counts from zero to number of elements - 1
+        // used to draw links between points
         let links = [];
         for (i = 0; i < num - 1; i++) {
             links.push(i);
         }
 
-        // https://bl.ocks.org/mbostock/899711
-        // https://stackoverflow.com/questions/35703407/on-a-google-maps-overlay-how-do-i-create-lines-between-svg-elements-in-d3
+        // setup google map
         let map = new google.maps.Map(d3.select("#map").node(), {
             zoom: 16,
             center: new google.maps.LatLng(avgLat, avgLon),
             mapTypeId: google.maps.MapTypeId.TERRAIN
         });
 
+        // get overlay for drawing on the map
         let overlay = new google.maps.OverlayView();
 
-        // Add the container when the overlay is added to the map.
         overlay.onAdd = function() {
-            let layer = d3.select(this.getPanes().overlayLayer).append("div").attr("class", "stations");
 
-            // Draw each marker as a separate SVG element.
-            // We could use a single SVG, but what size would it have?
+            let layer = d3.select(this.getPanes().overlayLayer).append("div").attr("class", "path");
+
+            // draw each marker and line as a separate element
+            // this is probably a bad way of doing things, but we didn't manage to force a single SVG
+            // to fit over the whole map
             overlay.draw = function() {
+
                 let projection = this.getProjection(),
                 padding = 10;
 
-                layer.selectAll("svg").remove();
-
+                // add marker SVG and markers
                 let marker = layer.selectAll("svg.markers")
                     .data(t02Subset)
                     .each(transform) // update existing markers
@@ -59,30 +64,8 @@
                     .each(transform)
                     .attr("class", "marker");
 
-                // this works as long as
-                // 1. tmpPos1.x is before tmpPos2.x and so on
-                // 2. both of the points are inside of the current view
-                /*
-                let tmpPos1 = latLongToPos(t02[100]);
-                let tmpPos2 = latLongToPos(t02[2000]);
-
-                let line = layer.append("svg")
-                    .style("left", tmpPos1.x + "px")
-                    .style("right", tmpPos1.y + "px")
-                    .style("width", (tmpPos2.x - tmpPos1.x) + "px")
-                    .style("height", (tmpPos2.y - tmpPos1.y) + "px")
-                    .append("line")
-                    .attr("x1", tmpPos1.x)
-                    .attr("x2", tmpPos2.x)
-                    .attr("y1", tmpPos1.y)
-                    .attr("y2", tmpPos2.y)
-                    .style("fill", "none")
-                    .style("stroke", "steelblue");
-                 */
-
-                // Add a circle.
                 marker.append("circle")
-                    .attr("r", 4.5)
+                    .attr("r", 3.5)
                     .attr("cx", padding)
                     .attr("cy", padding);
 
@@ -95,19 +78,15 @@
 
                 line.append("line")
                     .each(transformLinkLine);
-                    //.style('fill', 'none')
-                    //.style('stroke', 'steelblue');
-
-                console.log(marker);
-                console.log(line);
-                console.log("");
 
                 function latLongToPos(d) {
+                    // position in GPS to position in the map window
                     let p = new google.maps.LatLng(d.posLat, d.posLon);
                     return projection.fromLatLngToDivPixel(p);
                 }
 
                 function latLongToPosSubtractPadding(d) {
+                    // subtract padding for markers
                     p = latLongToPos(d);
                     p.x = p.x - padding;
                     p.y = p.y - padding;
@@ -115,41 +94,80 @@
                 }
 
                 function transform(d) {
+                    // update positions of markers
                     d = latLongToPosSubtractPadding(d);
                     return d3.select(this)
-                    .style("left", d.x + "px")
-                    .style("top", d.y + "px");
+                        .style("left", d.x + "px")
+                        .style("top", d.y + "px");
                 }
 
                 function transformLinkSvg(d) {
+                    // update positions of SVG holding lines
                     let p1 = latLongToPos(t02Subset[d]),
                     p2 = latLongToPos(t02Subset[d + 1]);
 
+                    let left, top, width, height;
+
+                    if (p1.x < p2.x) {
+                        left = p1.x;
+                        width = p2.x - p1.x;
+                    } else {
+                        left = p2.x;
+                        width = p1.x - p2.x;
+                    }
+
+                    if (p1.y < p2.y) {
+                        top = p1.y;
+                        height = p2.y - p1.y;
+                    } else {
+                        top = p2.y;
+                        height = p1.y - p2.y;
+                    }
+
                     d3.select(this)
-                    .style("left", p1.x + "px")
-                    .style("top", p2.y + "px")
-                    .style("width", (p2.x - p1.x) + "px")
-                    .style("height", (p1.y - p2.y) + "px")
-                    .style('fill', 'none')
-                    .style('stroke', 'steelblue');
+                        .style("left", left + "px")
+                        .style("top", top + "px")
+                        .style("width", width + "px")
+                        .style("height", height + "px")
+                        .style('fill', 'none')
+                        .style('stroke', 'steelblue');
                 }
 
                 function transformLinkLine(d) {
+                    // update settings of lines
+                    let p1 = latLongToPos(t02Subset[d]),
+                    p2 = latLongToPos(t02Subset[d + 1]);
 
-                    let parent = d3.select(this.parentNode);
+                    let x1, y1, x2, y2;
+
+                    if (p1.x < p2.x) {
+                        x1 = p2.x - p1.x;
+                        x2 = 0;
+                    } else {
+                        x1 = 0;
+                        x2 = p1.x - p2.x;
+                    }
+
+                    if (p1.y < p2.y) {
+                        y1 = p2.y - p1.y;
+                        y2 = 0;
+                    } else {
+                        y1 = 0;
+                        y2 = p1.y - p2.y;
+                    }
 
                     d3.select(this)
-                        .attr("x1", parent.style("width"))
-                        .attr("y1", 0)
-                        .attr("x2", 0)
-                        .attr("y2", parent.style("height"));
+                        .attr("x1", x1)
+                        .attr("y1", y1)
+                        .attr("x2", x2)
+                        .attr("y2", y2);
 
                 }
 
             };
         };
 
-        // Bind our overlay to the map…
+        // bind overlay to map
         overlay.setMap(map);
 
         });
