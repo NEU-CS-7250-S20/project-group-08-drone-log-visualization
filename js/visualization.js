@@ -38,7 +38,7 @@
         let map = new google.maps.Map(d3.select("#map").node(), {
             zoom: 16,
             center: new google.maps.LatLng(avgLat, avgLon),
-            mapTypeId: google.maps.MapTypeId.TERRAIN
+            mapTypeId: google.maps.MapTypeId.HYBRID
         });
 
         // get overlay for drawing on the map
