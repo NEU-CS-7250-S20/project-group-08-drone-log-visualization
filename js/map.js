@@ -1,3 +1,5 @@
+// slider: https://bl.ocks.org/johnwalley/e1d256b81e51da68f7feb632a53c3518
+
 function mapplot() {
 
     let width = 1.0, height = 1.0, maxPoints = 100;
@@ -16,6 +18,8 @@ function mapplot() {
         let avgLat = (lat.reduce((prev, cur) => cur += prev)) / lat.length;
         let avgLon = (lon.reduce((prev, cur) => cur += prev)) / lon.length;
 
+        d3.select(selector).attr("style", "width: " + width * 100 + "%; height: " + height * 100 + "%;");
+
         // subsample GPS coordinates, we have trouble displaying more than 150 at the same time
         // we will probably switch from Google Maps API to leaflet or something similar
         let t02Subset = subsample(t02, maxPoints);
@@ -27,8 +31,6 @@ function mapplot() {
         for (i = 0; i < maxPoints - 1; i++) {
             links.push(i);
         }
-
-        d3.select(selector).attr("style", "width: " + width * 100 + "%; height: " + height * 100 + "%;");
 
         // setup google map
         let map = new google.maps.Map(d3.select(selector).node(), {
@@ -58,7 +60,7 @@ function mapplot() {
                 // add marker SVG and markers
                 let marker = layer.selectAll("svg.markers")
                     .data(t02Subset)
-                    .each(transform) // update existing markers
+                    //.each(transform) // update existing markers
                     .enter().append("svg")
                     .each(transform)
                     .attr("class", "marker");
@@ -71,7 +73,7 @@ function mapplot() {
                 // add lines
                 let line = layer.selectAll("svg.lines")
                     .data(links)
-                    .each(transformLinkSvg)
+                    //.each(transformLinkSvg)
                     .enter().append("svg")
                     .each(transformLinkSvg);
 
@@ -169,6 +171,51 @@ function mapplot() {
 
         // bind overlay to map
         overlay.setMap(map);
+
+        // setup slider
+        let sliderSimple = d3
+            .sliderBottom()
+            .min(0.0)
+            .max(1.0)
+            .width(300)
+            .tickFormat(d3.format('.2'))
+            .ticks(5)
+            .default(0.5)
+            .on('onchange', function(val) {
+                // subsample GPS coordinates, we have trouble displaying more than 150 at the same time
+                // we will probably switch from Google Maps API to leaflet or something similar
+                let tmpNumPoints = Math.round(val * t02.length);
+                let tmpT02 = t02.slice(0, tmpNumPoints);
+                let tmpMaxPoints = Math.min(tmpNumPoints, maxPoints);
+
+                t02Subset = subsample(tmpT02, tmpMaxPoints);
+                t02Subset = t02Subset.reverse();
+
+                // simple array that counts from zero to number of elements - 1
+                // used to draw links between points
+                links = [];
+                for (i = 0; i < tmpMaxPoints - 1; i++) {
+                    links.push(i);
+                }
+
+                overlay.draw()
+            });
+
+
+        var gSimple = d3
+            .select('div#slider-simple')
+            .append('svg')
+            .attr('width', 500)
+            .attr('height', 100)
+            .append('g')
+            .attr('transform', 'translate(30,30)');
+
+
+        gSimple.call(sliderSimple);
+
+        /*
+        d3.select('p#value-simple').text(d3.format('.2%')(sliderSimple.value()));
+        */
 
     }
 
