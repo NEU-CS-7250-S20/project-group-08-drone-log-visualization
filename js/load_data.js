@@ -1,3 +1,16 @@
+function objectsToGMapsCoordinates(objects) {
+    let coords = [];
+
+    for (i = 0; i < objects.length; i++) {
+        coords.push({
+            lat: objects[i].posLat,
+            lng: objects[i].posLon
+        })
+    }
+
+    return coords;
+}
+
 function parseFloatWithCommaDecimal(string) {
     // parse a float with a comma instead of a dot for the decimal
     let tmp = string.replace(",", ".");
@@ -7,6 +20,11 @@ function parseFloatWithCommaDecimal(string) {
 
 function subsample(data, num) {
     // subsample data
+
+    if (num >= data.length) {
+        return data;
+    }
+
     let stride = data.length / num;
     let newData = [];
 
