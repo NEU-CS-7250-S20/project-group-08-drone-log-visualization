@@ -1,6 +1,12 @@
 function mapplot() {
 
-    let width = 1.0, height = 1.0, maxPoints = 100;
+    let width = 1.0,
+        height = 1.0,
+        maxPoints = 100,
+        mapStrokeWeight= 2;
+    const updateMap = "updateMap";
+
+    let dispatch = d3.dispatch(updateMap);
 
     function chart(mapSelector, sliderSelector, data) {
 
@@ -33,27 +39,53 @@ function mapplot() {
             mapTypeId: google.maps.MapTypeId.HYBRID
         });
 
-        // add path to the map
+        // get coordinates for map
         let coordinates = objectsToGMapsCoordinates(t02Subset);
-        let flightPath = addPath(coordinates, map);
 
-        // create on hover popup with additional information
+        // setup a popup for on hover
         Popup = createPopupClass();
         let popup = null;
         let popupContent = d3.select(mapSelector).append("div").attr("id", "map-on-hover");
 
-        flightPath.addListener('mouseover', function(d) {
-            updateMapPopupContent(d, popupContent);
-            popup = updateMapPopup(d, popup, popupContent);
-        });
+        let flightPaths = [];
 
-        flightPath.addListener('mouseout', function(d) {
-            deleteMapPopup(popup);
-        });
+        // selection variables
+        let selectStartIdx = null,
+            selectEndIdx = null;
 
-        // add markers for start and end
+        // add start marker now, end marker will be added with each map update
         let startMarker = addMarker(coordinates[0], "S", map);
-        let endMarker = addMarker(coordinates[coordinates.length - 1], "E", map);
+        let endMarker = null;
+
+        // setup map update function
+        dispatch.on(updateMap, function(d) {
+
+            // remove old path and add a new one
+            removeFromMap(flightPaths);
+            flightPaths = addPath(coordinates, map, selectStartIdx, selectEndIdx);
+
+            // add listeners for on hover
+            for (i = 0; i < flightPaths.length; i++) {
+                flightPaths[i].addListener('mouseover', function(d) {
+                    updateMapPopupContent(d, popupContent);
+                    popup = updateMapPopup(d, popup, popupContent);
+                });
+
+                flightPaths[i].addListener('mouseout', function(d) {
+                    deleteMapPopup(popup);
+                });
+
+                flightPaths[i].addListener("click", updateSelection);
+            }
+
+            // remove end marker and add a new one
+            removeFromMap([endMarker]);
+            endMarker = addMarker(coordinates[coordinates.length - 1], "E", map);
+
+        });
+
+        // update map
+        dispatch.call(updateMap);
 
         // setup slider
         let slider = d3.sliderBottom()
@@ -72,23 +104,8 @@ function mapplot() {
                 t02Subset = subsample(tmpT02, tmpMaxPoints);
                 coordinates = objectsToGMapsCoordinates(t02Subset);
 
-                // remove old path and add a new one
-                removeFromMap(flightPath);
-                flightPath = addPath(coordinates, map);
-
-                // add listeners for on hover
-                flightPath.addListener('mouseover', function(d) {
-                    updateMapPopupContent(d, popupContent);
-                    popup = updateMapPopup(d, popup, popupContent);
-                });
-
-                flightPath.addListener('mouseout', function(d) {
-                    deleteMapPopup(popup);
-                });
-
-                // remove end marker and add a new one
-                removeFromMap(endMarker);
-                endMarker = addMarker(coordinates[coordinates.length - 1], "E", map);
+                // update map
+                dispatch.call(updateMap);
 
             });
 
@@ -101,23 +118,65 @@ function mapplot() {
 
         sliderGroup.call(slider);
 
-        function addPath(coordinates, map) {
+        function addPath(coordinates, map, selectionStartIdx = null, selectionEndIdx = null) {
 
-            let flightPath = new google.maps.Polyline({
-                path: coordinates,
-                geodesic: true,
-                strokeColor: '#FF0000',
-                strokeOpacity: 1.0,
-                strokeWeight: 2
-            });
+            if (selectionStartIdx !== null && selectionEndIdx !== null) {
+                // TODO: what if start idx is 0 or end idx is coordinates.length - 1
+                let coords1 = coordinates.slice(0, selectionStartIdx),
+                    coordsSelection = coordinates.slice(selectionStartIdx, selectionEndIdx  + 1),
+                    coords2 = coordinates.slice(selectionEndIdx + 1, coordinates.length);
 
-            flightPath.setMap(map);
-            return flightPath
+                let p1 = new google.maps.Polyline({
+                    path: coords1,
+                    geodesic: true,
+                    strokeColor: '#FF0000',
+                    strokeOpacity: 1.0,
+                    strokeWeight: mapStrokeWeight
+                });
+                p1.setMap(map);
 
+                let p2 = new google.maps.Polyline({
+                    path: coordsSelection,
+                    geodesic: true,
+                    strokeColor: '#fffe43',
+                    strokeOpacity: 1.0,
+                    strokeWeight: mapStrokeWeight
+                });
+                p2.setMap(map);
+
+                let p3 = new google.maps.Polyline({
+                    path: coords2,
+                    geodesic: true,
+                    strokeColor: '#FF0000',
+                    strokeOpacity: 1.0,
+                    strokeWeight: mapStrokeWeight
+                });
+                p3.setMap(map);
+
+                return [p1, p2, p3];
+
+            } else {
+
+                let flightPath = new google.maps.Polyline({
+                    path: coordinates,
+                    geodesic: true,
+                    strokeColor: '#FF0000',
+                    strokeOpacity: 1.0,
+                    strokeWeight: mapStrokeWeight
+                });
+
+                flightPath.setMap(map);
+                return [flightPath];
+
+            }
         }
 
-        function removeFromMap(element) {
-            element.setMap(null);
+        function removeFromMap(elements) {
+            for (i = 0; i < elements.length; i++) {
+                if (elements[i] !== null) {
+                    elements[i].setMap(null);
+                }
+            }
         }
 
         function addMarker(position, text, map) {
@@ -180,6 +239,35 @@ function mapplot() {
             return idx;
         }
 
+        function updateSelection(d) {
+            let lat = d.latLng.lat(), lon = d.latLng.lng();
+            let index = findClosestPoint(lon, lat, t02Subset);
+
+            if (selectEndIdx !== null) {
+                // reset previous selection
+                selectStartIdx = null;
+                selectEndIdx = null;
+            }
+
+            if (selectStartIdx !== null) {
+                // selection completed
+                selectEndIdx = index;
+
+                if (selectStartIdx > selectEndIdx) {
+                    let tmp = selectEndIdx;
+                    selectEndIdx = selectStartIdx;
+                    selectStartIdx = tmp;
+                }
+
+                // update map
+                dispatch.call(updateMap);
+
+            } else {
+                // selection started
+                selectStartIdx = index;
+            }
+        }
+
     }
 
     chart.width = function(_) {
@@ -197,6 +285,12 @@ function mapplot() {
     chart.maxPoints = function(_) {
         if (!arguments.length) return maxPoints;
         maxPoints = _;
+        return chart;
+    };
+
+    chart.mapStrokeWeight = function(_) {
+        if (!arguments.length) return mapStrokeWeight;
+        mapStrokeWeight = _;
         return chart;
     };
 
