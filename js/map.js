@@ -41,6 +41,10 @@ function mapplot() {
         let coordinates = objectsToGMapsCoordinates(t02Subset);
         let flightPath = addPath(coordinates, map);
 
+        // add markers for start and end
+        let startMarker = addMarker(coordinates[0], "S", map);
+        let endMarker = addMarker(coordinates[coordinates.length - 1], "E", map);
+
         // setup slider
         let slider = d3.sliderBottom()
             .min(0.0)
@@ -58,8 +62,11 @@ function mapplot() {
                 t02Subset = subsample(tmpT02, tmpMaxPoints);
                 coordinates = objectsToGMapsCoordinates(t02Subset);
 
-                removePath(flightPath);
+                removeFromMap(flightPath);
                 flightPath = addPath(coordinates, map);
+
+                removeFromMap(endMarker);
+                endMarker = addMarker(coordinates[coordinates.length - 1], "E", map);
 
             });
 
@@ -89,8 +96,16 @@ function mapplot() {
 
     }
 
-    function removePath(flightPath) {
-        flightPath.setMap(null);
+    function removeFromMap(element) {
+        element.setMap(null);
+    }
+
+    function addMarker(position, text, map) {
+        return new google.maps.Marker({
+            position: position,
+            label: text,
+            map: map
+        });
     }
 
     chart.width = function(_) {
