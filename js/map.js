@@ -23,7 +23,6 @@ function mapplot() {
         // subsample GPS coordinates, we have trouble displaying more than 150 at the same time
         // we will probably switch from Google Maps API to leaflet or something similar
         let t02Subset = subsample(t02, maxPoints);
-        t02Subset = t02Subset.reverse();
 
         // simple array that counts from zero to number of elements - 1
         // used to draw links between points
@@ -189,7 +188,6 @@ function mapplot() {
                 let tmpMaxPoints = Math.min(tmpNumPoints, maxPoints);
 
                 t02Subset = subsample(tmpT02, tmpMaxPoints);
-                t02Subset = t02Subset.reverse();
 
                 // simple array that counts from zero to number of elements - 1
                 // used to draw links between points
@@ -202,8 +200,7 @@ function mapplot() {
             });
 
 
-        var gSimple = d3
-            .select('div#slider-simple')
+        var gSimple = d3.select('div#slider-simple')
             .append('svg')
             .attr('width', 500)
             .attr('height', 100)

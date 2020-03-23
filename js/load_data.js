@@ -7,11 +7,11 @@ function parseFloatWithCommaDecimal(string) {
 
 function subsample(data, num) {
     // subsample data
-    let stride = Math.floor(data.length / num);
+    let stride = data.length / num;
     let newData = [];
 
     for (i = 0; i < num; i++) {
-        newData.push(data[i * stride]);
+        newData.push(data[Math.floor(i * stride)]);
     }
 
     return newData;
