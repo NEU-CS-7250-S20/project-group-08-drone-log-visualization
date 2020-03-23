@@ -42,9 +42,10 @@ function parseT02(d) {
         altitude: parseFloatWithCommaDecimal(d.altitude),
         posLat: parseFloatWithCommaDecimal(d.posLat),
         posLon: parseFloatWithCommaDecimal(d.posLon),
-        psi: parseFloatWithCommaDecimal(d.psi),
-        theta: parseFloatWithCommaDecimal(d.theta),
-        phi: parseFloatWithCommaDecimal(d.phi),
+        // Change units to degree
+        psi: 57.3 * parseFloatWithCommaDecimal(d.psi),
+        theta: 57.3 * parseFloatWithCommaDecimal(d.theta),
+        phi: 57.3 * parseFloatWithCommaDecimal(d.phi),
         R: parseFloatWithCommaDecimal(d.R),
         Q: parseFloatWithCommaDecimal(d.Q),
         P: parseFloatWithCommaDecimal(d.P),

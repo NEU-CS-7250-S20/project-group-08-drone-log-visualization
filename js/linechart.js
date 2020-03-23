@@ -1,13 +1,13 @@
 function linechartPlot() {
 
-    let width = 460, height = 400;
+    let width = 460, height = 200;
     let color = "red";
     let dataName="altitude";
 
     function chart(selector, data) {
 
         // set the dimensions and margins of the graph
-        var margin = {top: 10, right: 30, bottom: 30, left: 60},
+        var margin = {top: 10, right: 30, bottom: 60, left: 60},
         _width = width - margin.left - margin.right,
         _height = height - margin.top - margin.bottom;
 
@@ -21,21 +21,36 @@ function linechartPlot() {
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         let t02 = data;
-        let data2draw = [];
         let timeStep = [];
 
-        // Get data2draw from log
-        // TODO: Should get things to draw from an input data index
-        for (i = 0; i < t02.length; i++) {
-            data2draw.push(t02[i][dataName]);
-            timeStep.push(t02[i].time);
+        let data2draw = new Array(dataName.length);
+        let minData = new Array(dataName.length);
+        let maxData = new Array(dataName.length);
+
+        for (i = 0; i < dataName.length; i++) {
+            data2draw[i] = [];
         }
+
+        // Get data2draw from log
+        for (name_index = 0; name_index < dataName.length; name_index++)
+        {
+            for (i = 0; i < t02.length; i++) 
+            {
+                data2draw[name_index].push(t02[i][dataName[name_index]]);
+                timeStep.push(t02[i].time);
+            }
+
+            minData[name_index] = d3.min(data2draw[name_index]);
+            maxData[name_index] = d3.max(data2draw[name_index]);
+        }
+
+        
 
         minTime = d3.min(timeStep);
         maxTime = d3.max(timeStep);
 
-        minY = d3.min(data2draw);
-        maxY = d3.max(data2draw);        
+        minY = d3.min(minData);
+        maxY = d3.max(maxData);   
 
         // Set proper range for x axis
         let xScale = d3.scaleLinear()
@@ -49,21 +64,51 @@ function linechartPlot() {
         // Set proper range for y axis
         let yScale = d3.scaleLinear()
             .domain([minY, maxY])
-            .range([_height - margin.bottom - margin.top, 0]);
+            .range([_height, 0]);
 
         svg.append("g")
             .call(d3.axisLeft(yScale));
 
-        // Add the line
-        svg.append("path")
-            .datum(t02)
-            .attr("fill", "none")
-            .attr("stroke", color)
-            .attr("stroke-width", 2)
-            .attr("d", d3.line()
-            .x(function(d) { return xScale(d.time - minTime) })
-            .y(function(d) { return yScale(d.altitude) })
-          );          
+        // Add lines
+        for (i = 0; i < dataName.length; i++) {
+            svg.append("path")
+                .datum(t02)
+                .attr("fill", "none")
+                .attr("stroke", color[i])
+                .attr("stroke-width", 2)
+                .attr("d", d3.line()
+                .x(function(d) { return xScale(d.time - minTime) })
+                .y(function(d) { return yScale(d[dataName[i]]) })
+            );          
+        }
+
+        // gridlines in x axis function
+        function make_y_gridlines() {		
+            return d3.axisLeft(yScale)
+                .ticks(10)
+        }
+
+        // gridlines in X axis function
+        function make_x_gridlines() {		
+            return d3.axisBottom(xScale)
+                .ticks(10)
+        }
+
+        // add the Y gridlines
+        svg.append("g")			
+            .attr("class", "grid")
+            .call(make_y_gridlines()
+                .tickSize(-_width)
+                .tickFormat(""));
+
+        // add the X gridlines
+        svg.append("g")			
+            .attr("class", "grid")
+            .attr("transform", "translate(0," + _height + ")")
+            .call(make_x_gridlines()
+                .tickSize(-_height)
+                .tickFormat("")
+      )                
 
     }
 
