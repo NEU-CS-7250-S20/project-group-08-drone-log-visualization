@@ -13,7 +13,8 @@
             t15 = files[1],
             t16 = files[2];
 
-        mapplot().width(0.5).height(0.5).maxPoints(10000)("#map", t02);
+        mapplot().width(0.5).height(0.5).maxPoints(1000)("#map", t02);
+        linechartPlot().width(450).height(400).color("red").dataName("altitude")("#line-chart-1", t02);
 
     });
 
