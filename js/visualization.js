@@ -14,8 +14,10 @@
             t16 = files[2];
 
         mapplot().width(0.5).height(0.5).maxPoints(1000)("#map", "div#map-slider", t02);
-        linechartPlot().width(450).height(400).color("red").dataName("altitude")("#line-chart-1", t02);
-
+        linechartPlot().width(450).height(400).color(["blue"]).dataName(["altitude"])("#line-chart-1", t02);
+        linechartPlot().width(450).height(400).color(["blue"]).dataName(["airSpeed"])("#line-chart-1", t02);
+        linechartPlot().width(450).height(400).color(["red", "blue", "green"]).dataName(["phi", "theta", "psi"])("#line-chart-1", t02);
+        
     });
 
 })());

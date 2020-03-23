@@ -11,8 +11,8 @@ h1, h2, h3 {
 
 /* Your text should be in a nice narrow column */
 .content-column {
-	max-width: 650px;
-	margin: 40px auto;
+	max-width: 600px;
+	margin: 0px auto;
 }
 
 /* But your visualization should be full-width and full-height */
