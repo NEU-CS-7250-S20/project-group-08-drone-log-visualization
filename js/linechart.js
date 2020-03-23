@@ -44,8 +44,6 @@ function linechartPlot() {
             maxData[name_index] = d3.max(data2draw[name_index]);
         }
 
-        
-
         minTime = d3.min(timeStep);
         maxTime = d3.max(timeStep);
 
