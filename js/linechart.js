@@ -16,6 +16,7 @@ function linechartPlot() {
             .append("svg")
             .attr("width", _width + margin.left + margin.right)
             .attr("height", _height + margin.top + margin.bottom)
+            .attr("style", "")
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 

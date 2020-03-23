@@ -18,7 +18,7 @@ function mapplot() {
         let avgLat = (lat.reduce((prev, cur) => cur += prev)) / lat.length;
         let avgLon = (lon.reduce((prev, cur) => cur += prev)) / lon.length;
 
-        d3.select(selector).attr("style", "width: " + width * 100 + "%; height: " + height * 100 + "%;");
+        d3.select(selector).attr("style", "width: " + width * 100 + "%; height: " + height * 100 + "%; float: left; display: inline-block;");
 
         let t02Subset = subsample(t02, maxPoints);
 
@@ -74,7 +74,7 @@ function mapplot() {
                 flightPath.setMap(map);
             });
 
-
+        /*
         var gSimple = d3.select('div#slider-simple')
             .append('svg')
             .attr('width', 500)
@@ -84,11 +84,7 @@ function mapplot() {
 
 
         gSimple.call(sliderSimple);
-
-        /*
-        d3.select('p#value-simple').text(d3.format('.2%')(sliderSimple.value()));
         */
-
     }
 
     chart.width = function(_) {
