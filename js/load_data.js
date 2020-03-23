@@ -1,4 +1,5 @@
 function objectsToGMapsCoordinates(objects) {
+    // extract coordinates from data object and put them in a format for google maps js API
     let coords = [];
 
     for (i = 0; i < objects.length; i++) {
@@ -20,7 +21,6 @@ function parseFloatWithCommaDecimal(string) {
 
 function subsample(data, num) {
     // subsample data
-
     if (num >= data.length) {
         return data;
     }
