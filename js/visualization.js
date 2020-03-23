@@ -17,7 +17,9 @@
         linechartPlot().width(450).height(400).color(["blue"]).dataName(["altitude"])("#line-chart-1", t02);
         linechartPlot().width(450).height(400).color(["blue"]).dataName(["airSpeed"])("#line-chart-1", t02);
         linechartPlot().width(450).height(400).color(["red", "blue", "green"]).dataName(["phi", "theta", "psi"])("#line-chart-1", t02);
-        
+        linechartPlot().width(450).height(400).color(["red", "blue", "green"]).dataName(["accX", "accY", "accZ"])("#line-chart-1", t02);
+        linechartPlot().width(450).height(400).color(["red", "blue", "green"]).dataName(["P", "Q", "R"])("#line-chart-1", t02);
+        linechartPlot().width(450).height(400).color(["blue"]).dataName(["groundSpeed"])("#line-chart-1", t02);
     });
 
 })());

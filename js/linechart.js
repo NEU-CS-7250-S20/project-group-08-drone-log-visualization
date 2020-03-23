@@ -7,7 +7,7 @@ function linechartPlot() {
     function chart(selector, data) {
 
         // set the dimensions and margins of the graph
-        var margin = {top: 0, right: 30, bottom: 100, left: 60},
+        var margin = {top: 10, right: 30, bottom: 60, left: 60},
         _width = width - margin.left - margin.right,
         _height = height - margin.top - margin.bottom;
 
