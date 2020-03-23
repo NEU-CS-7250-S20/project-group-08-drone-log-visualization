@@ -130,7 +130,15 @@ function mapplot() {
 
         function updateMapPopupContent(d, popupContent) {
             let lat = d.latLng.lat(), lon = d.latLng.lng();
-            popupContent.html("Lat: " + lat.toFixed(2) + "<br/>Lon: " + lon.toFixed(2));
+            let index = findClosestPoint(lon, lat, t02Subset);
+
+            let altitude = t02Subset[index].altitude,
+                groundSpeed = t02Subset[index].groundSpeed;
+
+            popupContent.html(
+                "Altitude: " + altitude.toFixed(2) + " m" +
+                "<br/>Ground speed: " + groundSpeed.toFixed(2) + " km/h"
+            );
         }
 
         function updateMapPopup(d, popup, popupContent) {
@@ -148,6 +156,28 @@ function mapplot() {
             if (popup !== null) {
                 popup.setMap(null);
             }
+        }
+
+        function findClosestPoint(lon, lat, data) {
+
+            let dist = null;
+            let idx = null;
+
+            for (i = 0; i < data.length;i++) {
+
+                let tmpDist = Math.abs(lon - data[i].posLon) + Math.abs(lat - data[i].posLat);
+
+                if (dist === null) {
+                    dist = tmpDist;
+                    idx = i;
+                } else if (tmpDist < dist) {
+                    dist = tmpDist;
+                    idx = i;
+                }
+
+            }
+
+            return idx;
         }
 
     }
