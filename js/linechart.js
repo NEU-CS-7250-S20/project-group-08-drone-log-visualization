@@ -1,13 +1,14 @@
 function linechartPlot() {
 
     let width = 460, height = 200;
-    let color = "red";
+    let dataColor = "red";
     let dataName="altitude";
+    let dataLegend = "Altitude [m]";
 
     function chart(selector, data) {
 
         // set the dimensions and margins of the graph
-        var margin = {top: 10, right: 30, bottom: 60, left: 60},
+        var margin = {top: 40, right: 30, bottom: 60, left: 60},
         _width = width - margin.left - margin.right,
         _height = height - margin.top - margin.bottom;
 
@@ -72,7 +73,7 @@ function linechartPlot() {
             svg.append("path")
                 .datum(t02)
                 .attr("fill", "none")
-                .attr("stroke", color[i])
+                .attr("stroke", dataColor[i])
                 .attr("stroke-width", 2)
                 .attr("d", d3.line()
                 .x(function(d) { return xScale(d.time - minTime) })
@@ -105,8 +106,12 @@ function linechartPlot() {
             .attr("transform", "translate(0," + _height + ")")
             .call(make_x_gridlines()
                 .tickSize(-_height)
-                .tickFormat("")
-      )                
+                .tickFormat(""));
+                
+        for (i = 1; i <= dataName.length; i++) {
+            svg.append("circle").attr("cx",_width/ (dataName.length + 1) * i).attr("cy", -10).attr("r", 6).style("fill", dataColor[i - 1]);
+            svg.append("text").attr("x", _width/ (dataName.length + 1) * i + 8).attr("y",-5).text(dataLegend[i-1]).style("font-size", "15px").attr("alignment-baseline","middle");
+        }
 
     }
 
@@ -122,9 +127,9 @@ function linechartPlot() {
         return chart;
     };
 
-    chart.color = function(_) {
-        if (!arguments.length) return color;
-        color = _;
+    chart.dataColor = function(_) {
+        if (!arguments.length) return dataColor;
+        dataColor = _;
         return chart;
     };
 
@@ -134,11 +139,11 @@ function linechartPlot() {
         return chart;
     };   
 
-    // chart.dataLegend = function(_) {
-    //     if (!arguments.dataLegend) return data_legend;
-    //     dataLegend = _;
-    //     return dataLegend;
-    // };      
+    chart.dataLegend = function(_) {
+        if (!arguments.length) return dataLegend;
+        dataLegend = _;
+        return chart;
+    };      
 
     return chart;
 
