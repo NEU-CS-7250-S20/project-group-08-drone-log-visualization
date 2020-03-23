@@ -122,9 +122,9 @@ function mapplot() {
 
             if (selectionStartIdx !== null && selectionEndIdx !== null) {
                 // TODO: what if start idx is 0 or end idx is coordinates.length - 1
-                let coords1 = coordinates.slice(0, selectionStartIdx),
+                let coords1 = coordinates.slice(0, selectionStartIdx + 1),
                     coordsSelection = coordinates.slice(selectionStartIdx, selectionEndIdx  + 1),
-                    coords2 = coordinates.slice(selectionEndIdx + 1, coordinates.length);
+                    coords2 = coordinates.slice(selectionEndIdx, coordinates.length);
 
                 let p1 = new google.maps.Polyline({
                     path: coords1,
