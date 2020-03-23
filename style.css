@@ -154,3 +154,14 @@ html, body, #map {
 	/* The max width of the info window. */
 	width: 200px;
 }
+
+/* Grid style */
+.grid line {
+	stroke: lightgrey;
+	stroke-opacity: 0.7;
+	shape-rendering: crispEdges;
+  }
+  
+  .grid path {
+	stroke-width: 0;
+  }

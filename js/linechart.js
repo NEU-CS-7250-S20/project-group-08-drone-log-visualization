@@ -82,6 +82,34 @@ function linechartPlot() {
             );          
         }
 
+        // gridlines in x axis function
+        function make_y_gridlines() {		
+            return d3.axisLeft(yScale)
+                .ticks(10)
+        }
+
+        // gridlines in X axis function
+        function make_x_gridlines() {		
+            return d3.axisBottom(xScale)
+                .ticks(10)
+        }
+
+        // add the Y gridlines
+        svg.append("g")			
+            .attr("class", "grid")
+            .call(make_y_gridlines()
+                .tickSize(-_width)
+                .tickFormat(""));
+
+        // add the X gridlines
+        svg.append("g")			
+            .attr("class", "grid")
+            .attr("transform", "translate(0," + _height + ")")
+            .call(make_x_gridlines()
+                .tickSize(-_height)
+                .tickFormat("")
+      )                
+
     }
 
     chart.width = function(_) {
