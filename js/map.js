@@ -1,7 +1,3 @@
-// slider: https://bl.ocks.org/johnwalley/e1d256b81e51da68f7feb632a53c3518
-// https://developers.google.com/maps/documentation/javascript/examples/polyline-simple
-// https://developers.google.com/maps/documentation/javascript/examples/polyline-remove
-
 function mapplot() {
 
     let width = 1.0, height = 1.0, maxPoints = 100;
@@ -41,6 +37,20 @@ function mapplot() {
         let coordinates = objectsToGMapsCoordinates(t02Subset);
         let flightPath = addPath(coordinates, map);
 
+        // create on hover popup with additional information
+        Popup = createPopupClass();
+        let popup = null;
+        let popupContent = d3.select(mapSelector).append("div").attr("id", "map-on-hover");
+
+        flightPath.addListener('mouseover', function(d) {
+            updateMapPopupContent(d, popupContent);
+            popup = updateMapPopup(d, popup, popupContent);
+        });
+
+        flightPath.addListener('mouseout', function(d) {
+            deleteMapPopup(popup);
+        });
+
         // add markers for start and end
         let startMarker = addMarker(coordinates[0], "S", map);
         let endMarker = addMarker(coordinates[coordinates.length - 1], "E", map);
@@ -54,7 +64,7 @@ function mapplot() {
             .ticks(5)
             .default(1.0)
             .on('onchange', function(val) {
-
+                // get new path data
                 let tmpNumPoints = Math.round(val * t02.length);
                 let tmpT02 = t02.slice(0, tmpNumPoints);
                 let tmpMaxPoints = Math.min(tmpNumPoints, maxPoints);
@@ -62,9 +72,21 @@ function mapplot() {
                 t02Subset = subsample(tmpT02, tmpMaxPoints);
                 coordinates = objectsToGMapsCoordinates(t02Subset);
 
+                // remove old path and add a new one
                 removeFromMap(flightPath);
                 flightPath = addPath(coordinates, map);
 
+                // add listeners for on hover
+                flightPath.addListener('mouseover', function(d) {
+                    updateMapPopupContent(d, popupContent);
+                    popup = updateMapPopup(d, popup, popupContent);
+                });
+
+                flightPath.addListener('mouseout', function(d) {
+                    deleteMapPopup(popup);
+                });
+
+                // remove end marker and add a new one
                 removeFromMap(endMarker);
                 endMarker = addMarker(coordinates[coordinates.length - 1], "E", map);
 
@@ -79,33 +101,55 @@ function mapplot() {
 
         sliderGroup.call(slider);
 
-    }
+        function addPath(coordinates, map) {
 
-    function addPath(coordinates, map) {
+            let flightPath = new google.maps.Polyline({
+                path: coordinates,
+                geodesic: true,
+                strokeColor: '#FF0000',
+                strokeOpacity: 1.0,
+                strokeWeight: 2
+            });
 
-        let flightPath = new google.maps.Polyline({
-            path: coordinates,
-            geodesic: true,
-            strokeColor: '#FF0000',
-            strokeOpacity: 1.0,
-            strokeWeight: 2
-        });
+            flightPath.setMap(map);
+            return flightPath
 
-        flightPath.setMap(map);
-        return flightPath
+        }
 
-    }
+        function removeFromMap(element) {
+            element.setMap(null);
+        }
 
-    function removeFromMap(element) {
-        element.setMap(null);
-    }
+        function addMarker(position, text, map) {
+            return new google.maps.Marker({
+                position: position,
+                label: text,
+                map: map
+            });
+        }
 
-    function addMarker(position, text, map) {
-        return new google.maps.Marker({
-            position: position,
-            label: text,
-            map: map
-        });
+        function updateMapPopupContent(d, popupContent) {
+            let lat = d.latLng.lat(), lon = d.latLng.lng();
+            popupContent.html("Lat: " + lat.toFixed(2) + "<br/>Lon: " + lon.toFixed(2));
+        }
+
+        function updateMapPopup(d, popup, popupContent) {
+            let lat = d.latLng.lat(), lon = d.latLng.lng();
+
+            deleteMapPopup(popup);
+
+            let newPopup = new Popup(new google.maps.LatLng(lat, lon), popupContent.node());
+            newPopup.setMap(map);
+
+            return newPopup;
+        }
+
+        function deleteMapPopup(popup) {
+            if (popup !== null) {
+                popup.setMap(null);
+            }
+        }
+
     }
 
     chart.width = function(_) {
