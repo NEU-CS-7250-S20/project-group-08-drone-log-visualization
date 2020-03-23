@@ -192,11 +192,11 @@ function mapplot() {
             let index = findClosestPoint(lon, lat, t02Subset);
 
             let altitude = t02Subset[index].altitude,
-                groundSpeed = t02Subset[index].groundSpeed;
+                airSpeed = t02Subset[index].airSpeed;
 
             popupContent.html(
                 "Altitude: " + altitude.toFixed(2) + " m" +
-                "<br/>Ground speed: " + groundSpeed.toFixed(2) + " km/h"
+                "<br/>Air speed: " + airSpeed.toFixed(2) + " km/h"
             );
         }
 
@@ -247,6 +247,7 @@ function mapplot() {
                 // reset previous selection
                 selectStartIdx = null;
                 selectEndIdx = null;
+                dispatch.call(updateMap);
             }
 
             if (selectStartIdx !== null) {
