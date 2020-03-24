@@ -53,8 +53,8 @@ function mapplot() {
         let selectStartIdx = null,
             selectEndIdx = null;
 
-        // add start marker now, end marker will be added with each map update
-        let startMarker = addMarker(coordinates[0], "S", map);
+        // start and end markers
+        let startMarker = null;
         let endMarker = null;
 
         // setup map update function
@@ -79,7 +79,8 @@ function mapplot() {
             }
 
             // remove end marker and add a new one
-            removeFromMap([endMarker]);
+            removeFromMap([startMarker, endMarker]);
+            startMarker = addMarker(coordinates[0], "S", map);
             endMarker = addMarker(coordinates[coordinates.length - 1], "E", map);
 
         });
@@ -91,14 +92,18 @@ function mapplot() {
         let slider = d3.sliderBottom()
             .min(0.0)
             .max(1.0)
-            .width(300)
+            .width(800)
             .tickFormat(d3.format('.2'))
             .ticks(5)
-            .default(1.0)
+            .default([0.0, 1.0])
+            .fill("#2196f3")
             .on('onchange', function(val) {
+
                 // get new path data
-                let tmpNumPoints = Math.round(val * t02.length);
-                let tmpT02 = t02.slice(0, tmpNumPoints);
+                let tmpStartPoint = Math.round(val[0] * t02.length);
+                let tmpEndPoint = Math.round(val[1] * t02.length);
+                let tmpNumPoints = tmpEndPoint - tmpStartPoint;
+                let tmpT02 = t02.slice(tmpStartPoint, tmpEndPoint);
                 let tmpMaxPoints = Math.min(tmpNumPoints, maxPoints);
 
                 t02Subset = subsample(tmpT02, tmpMaxPoints);
@@ -110,13 +115,17 @@ function mapplot() {
             });
 
         let sliderGroup = d3.select(sliderSelector)
+            .attr("style", "margin-left: 10%;")
             .append("svg")
-            .attr("width", 500)
+            .attr("width", 1000)
             .attr("height", 100)
             .append("g")
             .attr("transform", "translate(30,30)");
 
         sliderGroup.call(slider);
+
+        // add slider to map
+        map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(d3.select(sliderSelector).node());
 
         function addPath(coordinates, map, selectionStartIdx = null, selectionEndIdx = null) {
 
