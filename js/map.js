@@ -23,6 +23,7 @@ function mapplot() {
         let avgLon = (lon.reduce((prev, cur) => cur += prev)) / lon.length;
 
         // modify map styles
+        /*
         d3.select(mapSelector)
             .attr(
                 "style", "width: " + width * 100 +
@@ -30,6 +31,8 @@ function mapplot() {
                 "%; float: left; display: inline-block;"
             );
 
+
+         */
         // subsample data and setup google map
         let t02Subset = subsample(t02, maxPoints);
 
@@ -92,7 +95,7 @@ function mapplot() {
         let slider = d3.sliderBottom()
             .min(0.0)
             .max(1.0)
-            .width(800)
+            .width(800) // TODO: should be relative
             .tickFormat(d3.format('.2'))
             .ticks(5)
             .default([0.0, 1.0])
@@ -117,7 +120,7 @@ function mapplot() {
         let sliderGroup = d3.select(sliderSelector)
             .attr("style", "margin-left: 10%;")
             .append("svg")
-            .attr("width", 1000)
+            .attr("width", 1000) // TODO: should be relative
             .attr("height", 100)
             .append("g")
             .attr("transform", "translate(30,30)");
