@@ -60,37 +60,6 @@ function mapplot() {
         let startMarker = null;
         let endMarker = null;
 
-        // setup map update function
-        dispatch.on(updateMap, function(d) {
-
-            // remove old path and add a new one
-            removeFromMap(flightPaths);
-            flightPaths = addPath(coordinates, map, selectStartIdx, selectEndIdx);
-
-            // add listeners for on hover
-            for (i = 0; i < flightPaths.length; i++) {
-                flightPaths[i].addListener('mouseover', function(d) {
-                    updateMapPopupContent(d, popupContent);
-                    popup = updateMapPopup(d, popup, popupContent);
-                });
-
-                flightPaths[i].addListener('mouseout', function(d) {
-                    deleteMapPopup(popup);
-                });
-
-                flightPaths[i].addListener("click", updateSelection);
-            }
-
-            // remove end marker and add a new one
-            removeFromMap([startMarker, endMarker]);
-            startMarker = addMarker(coordinates[0], "S", map);
-            endMarker = addMarker(coordinates[coordinates.length - 1], "E", map);
-
-        });
-
-        // update map
-        dispatch.call(updateMap);
-
         // setup slider
         let slider = d3.sliderBottom()
             .min(0.0)
@@ -119,6 +88,7 @@ function mapplot() {
 
         let sliderGroup = d3.select(sliderSelector)
             .attr("style", "margin-left: 10%;")
+            //.attr("hidden", null)
             .append("svg")
             .attr("width", 1000) // TODO: should be relative
             .attr("height", 100)
@@ -129,6 +99,40 @@ function mapplot() {
 
         // add slider to map
         map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(d3.select(sliderSelector).node());
+
+        // setup map update function
+        dispatch.on(updateMap, function(d) {
+
+            // make sure slider is shown
+            d3.select(sliderSelector).attr("hidden", null);
+
+            // remove old path and add a new one
+            removeFromMap(flightPaths);
+            flightPaths = addPath(coordinates, map, selectStartIdx, selectEndIdx);
+
+            // add listeners for on hover
+            for (i = 0; i < flightPaths.length; i++) {
+                flightPaths[i].addListener('mouseover', function(d) {
+                    updateMapPopupContent(d, popupContent);
+                    popup = updateMapPopup(d, popup, popupContent);
+                });
+
+                flightPaths[i].addListener('mouseout', function(d) {
+                    deleteMapPopup(popup);
+                });
+
+                flightPaths[i].addListener("click", updateSelection);
+            }
+
+            // remove end marker and add a new one
+            removeFromMap([startMarker, endMarker]);
+            startMarker = addMarker(coordinates[0], "S", map);
+            endMarker = addMarker(coordinates[coordinates.length - 1], "E", map);
+
+        });
+
+        // update map
+        dispatch.call(updateMap);
 
         function addPath(coordinates, map, selectionStartIdx = null, selectionEndIdx = null) {
 
