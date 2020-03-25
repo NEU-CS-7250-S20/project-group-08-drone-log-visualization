@@ -7,6 +7,9 @@ function linechartPlot() {
 
     function chart(selector, data) {
 
+        height = d3.select(selector).node().getBoundingClientRect().height;
+        width = d3.select(selector).node().getBoundingClientRect().width;
+
         // set the dimensions and margins of the graph
         var margin = {top: 40, right: 30, bottom: 60, left: 60},
         _width = width - margin.left - margin.right,
