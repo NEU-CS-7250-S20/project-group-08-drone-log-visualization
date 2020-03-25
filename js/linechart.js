@@ -15,7 +15,7 @@ function linechartPlot() {
         // append the svg object to the body of the page
         var svg = d3.select(selector)
             .append("svg")
-            .attr("width", "100%")
+            .attr("width", _width + margin.left + margin.right)
             .attr("height", _height + margin.top + margin.bottom)
             .attr("style", "")
             .append("g")
