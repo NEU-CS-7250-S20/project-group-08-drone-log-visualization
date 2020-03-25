@@ -1,12 +1,15 @@
 function linechartPlot() {
 
-    let width = 460, height = 200;
+    // let width = 460, height = 200;
     let dataColor = "red";
     let dataName="altitude";
     let dataLegend = "Altitude [m]";
 
     function chart(selector, data) {
 
+        width = 461;
+        height = 179;
+        
         // set the dimensions and margins of the graph
         var margin = {top: 40, right: 30, bottom: 60, left: 60},
         _width = width - margin.left - margin.right,
@@ -115,17 +118,17 @@ function linechartPlot() {
 
     }
 
-    chart.width = function(_) {
-        if (!arguments.length) return width;
-        width = _;
-        return chart;
-    };
+    // chart.width = function(_) {
+    //     if (!arguments.length) return width;
+    //     width = _;
+    //     return chart;
+    // };
 
-    chart.height = function(_) {
-        if (!arguments.length) return height;
-        height = _;
-        return chart;
-    };
+    // chart.height = function(_) {
+    //     if (!arguments.length) return height;
+    //     height = _;
+    //     return chart;
+    // };
 
     chart.dataColor = function(_) {
         if (!arguments.length) return dataColor;
