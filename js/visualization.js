@@ -7,12 +7,17 @@
         d3.dsv(delimiter, "data/sn11401003-2018-09-11-14-13-ses-00.T02.csv", parseT02),
         d3.dsv(delimiter, "data/sn11401003-2018-09-11-14-13-ses-00.T15.csv", parseT15),
         d3.dsv(delimiter, "data/sn11401003-2018-09-11-14-13-ses-00.T16.csv", parseT16),
+        d3.text("data/sn11401003-2018-09-11-14-13-ses-00.mes")
     ]).then(function(files) {
 
         let t02 = files[0],
             t15 = files[1],
-            t16 = files[2];
+            t16 = files[2],
+            log = files[3];
 
+        log = parseLog(log);
+        let linkErrors = getLinkErrorsFromLog(log);
+        
         mapplot().width(0.5).height(0.5).maxPoints(10000).mapStrokeWeight(3)("#map", "div#map-slider", t02);
         linechartPlot().width(450).height(400).dataColor(["red"]).dataName(["groundSpeed"]).dataLegend(["gndS [km/h]"])("#line-chart-big", t02);
         linechartPlot().width(450).height(400).dataColor(["blue", "red"]).dataName(["airSpeed", "altitude"]).dataLegend(["AirS [km/h]", "Alt [m]"])("#line-chart-1", t02);

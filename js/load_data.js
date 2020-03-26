@@ -1,3 +1,7 @@
+const RADIO_LINK_BROKEN_MSG = "smon: Radio link broken";
+const RADIO_LINK_RESTORED_MSG = "smon: Radio link restored";
+
+
 function objectsToGMapsCoordinates(objects) {
     // extract coordinates from data object and put them in a format for google maps js API
     let coords = [];
@@ -33,6 +37,69 @@ function subsample(data, num) {
     }
 
     return newData;
+}
+
+function parseLog(log) {
+    // parse log text file
+    let newLog = [];
+    let splitLines = log.split("\r\n");
+
+    for (i = 0; i < splitLines.length; i++) {
+        let line = splitLines[i];
+        let split = line.split(":");
+
+        if (split.length > 2) {
+            let time = parseFloat(split[2]);
+            let message = split.slice(3, split.length).join(":");
+            message = message.trim();
+            newLog.push({
+                time: time,
+                message: message
+            })
+        }
+    }
+
+    return newLog;
+
+}
+
+function getLinkErrorsFromLog(log) {
+    // get link error segments from log messages
+    let linkErrors = [];
+    let errorStart = null;
+
+    for (i = 0; i < log.length; i++) {
+
+        let logItem = log[i];
+
+        if (logItem.message === RADIO_LINK_BROKEN_MSG) {
+            if (errorStart === null) {
+                // error logged
+                errorStart = logItem.time;
+            }
+        } else if (logItem.message === RADIO_LINK_RESTORED_MSG) {
+            if (errorStart !== null) {
+                // error resolved
+                linkErrors.push({
+                    start: errorStart,
+                    end: logItem.time
+                });
+                errorStart = null;
+            }
+        }
+
+    }
+
+    if (errorStart !== null) {
+        // error was never resolved, continue until the last time step
+        linkErrors.push({
+            start: errorStart,
+            end: log[log.length - 1].time
+        })
+    }
+
+    return linkErrors;
+
 }
 
 function parseT02(d) {
