@@ -102,6 +102,110 @@ function getLinkErrorsFromLog(log) {
 
 }
 
+
+function getGPSErrorsFromT15(t15) {
+
+    let GPSErrors = [];
+    let GPSErrorStart = null;
+
+    for (i = 0; i < t15.length; i++) {
+
+        let line = t15[i];
+
+        if (line.gpsErr === 1) {
+            if (GPSErrorStart === null) {
+                GPSErrorStart = line.time;
+            }
+        } else if (line.gpsErr === 0) {
+            if (GPSErrorStart !== null) {
+                GPSErrors.push({
+                    start: GPSErrorStart,
+                    end: line.time
+                });
+                GPSErrorStart = null;
+            }
+        }
+
+    }
+
+    if (GPSErrorStart !== null) {
+        // error was never resolved, continue until the last time step
+        GPSErrors.push({
+            start: GPSErrorStart,
+            end: t15[t15.length - 1].time
+        })
+    }
+
+    return GPSErrors;
+
+}
+
+function getSensorErrorsFromT15(t15) {
+
+    let sensorErrors = [];
+    let sensorErrorStart = null;
+
+    for (i = 0; i < t15.length; i++) {
+
+        let line = t15[i];
+
+        if (line.sensorErr === 1) {
+            if (sensorErrorStart === null) {
+                sensorErrorStart = line.time;
+            }
+        } else if (line.sensorErr === 0) {
+            if (sensorErrorStart !== null) {
+                sensorErrors.push({
+                    start: sensorErrorStart,
+                    end: line.time
+                });
+                sensorErrorStart = null;
+            }
+        }
+
+    }
+
+    if (sensorErrorStart !== null) {
+        // error was never resolved, continue until the last time step
+        sensorErrors.push({
+            start: sensorErrorStart,
+            end: t15[t15.length - 1].time
+        })
+    }
+
+    return sensorErrors;
+
+}
+
+
+function errorTimesIntoT2Indices(errors, t2) {
+
+    let newErrors = [];
+
+    for (i = 0; i < errors.length; i++) {
+        newErrors.push({
+            start: null,
+            end: null
+        })
+    }
+
+    for (i = 0; i < t2.length; i++) {
+        let currentTime = t2[i].time;
+        for (j = 0; j < errors.length; j++) {
+            if (currentTime >= errors[j].start && newErrors[j].start === null) {
+                newErrors[j].start = i;
+            } else if (currentTime >= errors[j].end && newErrors[j].end === null) {
+                // this else if enforces that an error does not start and end at the same time step
+                newErrors[j].end = i;
+            }
+        }
+    }
+
+    return newErrors;
+
+}
+
+
 function parseT02(d) {
     // parse a single line of telemetry 2
     return {
