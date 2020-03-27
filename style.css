@@ -26,8 +26,8 @@ h1, h2, h3 {
 	width: 100%;
 	height: 100%;
 	display: grid;
-	grid-template-columns: auto auto auto auto;
-	grid-template-rows: auto auto auto auto;
+	grid-template-columns: 1fr 1fr 1fr 1fr;
+	grid-template-rows: 1fr 1fr 1fr 1fr;
 }
 
 #map {
@@ -188,3 +188,17 @@ html, body, #map {
 .grid path {
 	stroke-width: 0;
 }
+
+/* Zoom options */
+.zoom {
+	cursor: move;
+	fill: none;
+	pointer-events: all;
+  }
+
+.line {
+	fill: none;
+	stroke: steelblue;
+	stroke-width: 1.5px;
+}
+  

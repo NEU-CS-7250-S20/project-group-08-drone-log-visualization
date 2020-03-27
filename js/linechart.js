@@ -7,16 +7,16 @@ function linechartPlot() {
 
     function chart(selector, data) {
 
-        width = 461;
-        height = 179;
-        
+        height = d3.select(selector).node().getBoundingClientRect().height;
+        width = d3.select(selector).node().getBoundingClientRect().width;
+
         // set the dimensions and margins of the graph
-        var margin = {top: 40, right: 30, bottom: 60, left: 60},
+        let margin = {top: 50, right: 50, bottom: 50, left: 50},
         _width = width - margin.left - margin.right,
         _height = height - margin.top - margin.bottom;
 
         // append the svg object to the body of the page
-        var svg = d3.select(selector)
+        let svg = d3.select(selector)
             .append("svg")
             .attr("width", _width + margin.left + margin.right)
             .attr("height", _height + margin.top + margin.bottom)
@@ -59,6 +59,8 @@ function linechartPlot() {
             .domain([0, maxTime - minTime])
             .range([0, _width]);
 
+        let x2 = d3.scaleTime().range([0, _width]);
+
         svg.append("g")
             .attr("transform", "translate(0," + _height + ")")
             .call(d3.axisBottom(xScale));
@@ -71,18 +73,22 @@ function linechartPlot() {
         svg.append("g")
             .call(d3.axisLeft(yScale));
 
-        // Add lines
-        for (i = 0; i < dataName.length; i++) {
-            svg.append("path")
-                .datum(t02)
-                .attr("fill", "none")
-                .attr("stroke", dataColor[i])
-                .attr("stroke-width", 2)
-                .attr("d", d3.line()
-                .x(function(d) { return xScale(d.time - minTime) })
-                .y(function(d) { return yScale(d[dataName[i]]) })
-            );          
-        }
+        // // Add lines
+        // for (i = 0; i < dataName.length; i++) {
+        //     svg.append("path")
+        //         .datum(t02)
+        //         .attr("fill", "none")
+        //         .attr("stroke", dataColor[i])
+        //         .attr("stroke-width", 2)
+        //         .attr("d", d3.line()
+        //         .x(function(d) { return xScale(d.time - minTime) })
+        //         .y(function(d) { return yScale(d[dataName[i]]) })
+        //     );          
+        // }
+
+        let line = d3.line()
+        .x(function (d) { return xScale(d.time); })
+        .y(function (d) { return yScale(d[dataName[0]]); });    
 
         // gridlines in x axis function
         function make_y_gridlines() {		
@@ -116,19 +122,77 @@ function linechartPlot() {
             svg.append("text").attr("x", _width/ (dataName.length + 1) * i + 8).attr("y",-5).text(dataLegend[i-1]).style("font-size", "15px").attr("alignment-baseline","middle");
         }
 
+        var clip = svg.append("defs").append("svg:clipPath")
+            .attr("id", "clip")
+            .append("svg:rect")
+            .attr("width", width)
+            .attr("height", height)
+            .attr("x", 0)
+            .attr("y", 0); 
+
+
+    var Line_chart = svg.append("g")
+        .attr("class", "focus")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+        .attr("clip-path", "url(#clip)");
+
+    Line_chart.append("path")
+        .datum(data)
+        .attr("class", "line")
+        .attr("d", line);
+
+    var xAxis = d3.axisBottom(xScale)
+    var yAxis = d3.axisLeft(yScale)
+
+    var focus = svg.append("g")
+        .attr("class", "focus")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    focus.append("g")
+        .attr("class", "axis axis--x")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
+
+    focus.append("g")
+        .attr("class", "axis axis--y")
+        .call(yAxis);    
+
+        let zoom = d3.zoom()
+            .scaleExtent([1, Infinity])
+            .translateExtent([[0, 0], [_width, _height]])
+            .extent([[0, 0], [_width, _height]])
+            .on("zoom", zoomed);            
+
+        svg.append("rect")
+            .attr("class", "zoom")
+            .attr("width", _width)
+            .attr("height", _height)
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+            .call(zoom);
+
+        function zoomed() {
+            let t = d3.event.transform;
+            xScale.domain(t.rescaleX(xScale).domain());
+            focus.select(".axis--x").call(xAxis);
+            //  g.attr("transform", d3.event.transform);
+            //  Line_chart.select(".line").attr("d", line);
+            // focus.select(".axis--x").call(d3.axisBottom(xScale));
+            // context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
+            }
+
     }
 
-    // chart.width = function(_) {
-    //     if (!arguments.length) return width;
-    //     width = _;
-    //     return chart;
-    // };
+    chart.width = function(_) {
+        if (!arguments.length) return width;
+        width = _;
+        return chart;
+    };
 
-    // chart.height = function(_) {
-    //     if (!arguments.length) return height;
-    //     height = _;
-    //     return chart;
-    // };
+    chart.height = function(_) {
+        if (!arguments.length) return height;
+        height = _;
+        return chart;
+    };
 
     chart.dataColor = function(_) {
         if (!arguments.length) return dataColor;

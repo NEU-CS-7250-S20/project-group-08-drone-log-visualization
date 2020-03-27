@@ -14,12 +14,14 @@
             t16 = files[2];
 
         mapplot().width(0.5).height(0.5).maxPoints(10000).mapStrokeWeight(3)("#map", "div#map-slider", t02);
-        linechartPlot().dataColor(["blue", "red"]).dataName(["airSpeed", "altitude"]).dataLegend(["AirS [km/h]", "Alt [m]"])("#line-chart-1", t02);
-        //linechartPlot().width(450).height(400).dataColor(["red"]).dataName(["airSpeed"]).dataLegend(["AirS [km/h]"])("#line-chart-1", t02);
-        //linechartPlot().width(450).height(400).dataColor(["red", "blue", "green"]).dataName(["phi", "theta", "psi"]).dataLegend(["phi [deg]", "theta [deg]", "psi [deg]"])("#line-chart-1", t02);
-        //linechartPlot().width(450).height(400).dataColor(["red", "blue", "green"]).dataName(["accX", "accY", "accZ"]).dataLegend(["aX [mps]", "aY [mps]", "aZ [mps]"])("#line-chart-1", t02);
-        //linechartPlot().width(450).height(400).dataColor(["red", "blue", "green"]).dataName(["P", "Q", "R"]).dataLegend(["p [rps]", "q [rps]", "r [rps]"])("#line-chart-1", t02);
-        //linechartPlot().width(450).height(400).dataColor(["red"]).dataName(["groundSpeed"]).dataLegend(["gndS [km/h]"])("#line-chart-1", t02);
+        linechartPlot().width(450).height(400).dataColor(["blue", "red"]).dataName(["airSpeed", "altitude"]).dataLegend(["AirS [km/h]", "Alt [m]"])("#line-chart-big", t02);
+        linechartPlot().width(450).height(400).dataColor(["red"]).dataName(["groundSpeed"]).dataLegend(["gndS [km/h]"])("#line-chart-1", t02);
+        linechartPlot().width(450).height(400).dataColor(["red"]).dataName(["airSpeed"]).dataLegend(["AirS [km/h]"])("#line-chart-2", t02);
+        linechartPlot().width(450).height(400).dataColor(["red", "blue", "green"]).dataName(["phi", "theta", "psi"]).dataLegend(["phi [deg]", "theta [deg]", "psi [deg]"])("#line-chart-3", t02);
+        linechartPlot().width(450).height(400).dataColor(["red", "blue", "green"]).dataName(["accX", "accY", "accZ"]).dataLegend(["aX [mps]", "aY [mps]", "aZ [mps]"])("#line-chart-4", t02);
+        linechartPlot().width(450).height(400).dataColor(["red", "blue", "green"]).dataName(["P", "Q", "R"]).dataLegend(["p [rps]", "q [rps]", "r [rps]"])("#line-chart-5", t02);
+        linechartPlot().width(450).height(400).dataColor(["red"]).dataName(["groundSpeed"]).dataLegend(["gndS [km/h]"])("#line-chart-6", t02);
+        linechartPlot().width(450).height(400).dataColor(["red"]).dataName(["TAS"]).dataLegend(["TAS [km/h]"])("#line-chart-7", t02);
     });
 
 })());
