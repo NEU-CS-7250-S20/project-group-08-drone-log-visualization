@@ -8,7 +8,7 @@ function mapplot() {
 
     let dispatch = d3.dispatch(updateMap);
 
-    function chart(mapSelector, sliderSelector, data) {
+    function chart(mapSelector, sliderSelector, data, pathSegments) {
 
         // get the average longitude and latitude; this will be our starting point for the map *for now*
         let t02 = data;
@@ -33,8 +33,8 @@ function mapplot() {
 
 
          */
-        // subsample data and setup google map
-        let t02Subset = subsample(t02, maxPoints);
+        // setup google map
+        let t02Subset = t02;
 
         let map = new google.maps.Map(d3.select(mapSelector).node(), {
             zoom: 15,
@@ -75,10 +75,8 @@ function mapplot() {
                 let tmpStartPoint = Math.round(val[0] * t02.length);
                 let tmpEndPoint = Math.round(val[1] * t02.length);
                 let tmpNumPoints = tmpEndPoint - tmpStartPoint;
-                let tmpT02 = t02.slice(tmpStartPoint, tmpEndPoint);
-                let tmpMaxPoints = Math.min(tmpNumPoints, maxPoints);
 
-                t02Subset = subsample(tmpT02, tmpMaxPoints);
+                t02Subset = t02.slice(tmpStartPoint, tmpEndPoint);
                 coordinates = objectsToGMapsCoordinates(t02Subset);
 
                 // update map
