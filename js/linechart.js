@@ -59,7 +59,7 @@ function linechartPlot() {
             .domain([0, maxTime - minTime])
             .range([0, _width]);
 
-        xAxis = svg.append("g")
+        let xAxis = svg.append("g")
             .attr("transform", "translate(0," + _height + ")")
             .call(d3.axisBottom(xScale));
 
