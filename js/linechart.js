@@ -11,12 +11,12 @@ function linechartPlot() {
         width = d3.select(selector).node().getBoundingClientRect().width;
 
         // set the dimensions and margins of the graph
-        var margin = {top: 40, right: 30, bottom: 60, left: 60},
+        let margin = {top: 40, right: 30, bottom: 60, left: 60},
         _width = width - margin.left - margin.right,
         _height = height - margin.top - margin.bottom;
 
         // append the svg object to the body of the page
-        var svg = d3.select(selector)
+        let svg = d3.select(selector)
             .append("svg")
             .attr("width", _width + margin.left + margin.right)
             .attr("height", _height + margin.top + margin.bottom)
@@ -27,16 +27,18 @@ function linechartPlot() {
         let t02 = data;
         let timeStep = [];
 
-        let data2draw = new Array(dataName.length);
-        let minData = new Array(dataName.length);
-        let maxData = new Array(dataName.length);
+        let dataLen = dataName.length;
 
-        for (i = 0; i < dataName.length; i++) {
+        let data2draw = new Array(dataLen);
+        let minData = new Array(dataLen);
+        let maxData = new Array(dataLen);
+
+        for (i = 0; i < dataLen; i++) {
             data2draw[i] = [];
         }
 
-        // Get data2draw from log
-        for (name_index = 0; name_index < dataName.length; name_index++)
+        // Get data to draw from log
+        for (name_index = 0; name_index < dataLen; name_index++)
         {
             for (i = 0; i < t02.length; i++) 
             {
@@ -68,8 +70,8 @@ function linechartPlot() {
             .domain([minY, maxY])
             .range([_height, 0]);
 
-        svg.append("g")
-            .call(d3.axisLeft(yScale));
+        let yAxis = svg.append("g")
+                    .call(d3.axisLeft(yScale));
 
         // add clip path
         let clip = svg.append("defs").append("svg:clipPath")
@@ -83,14 +85,18 @@ function linechartPlot() {
         // add brushing
         let brush = d3.brushX()                   
             .extent( [ [0,0], [_width,_height] ] )  
-            .on("end", updateChart)   
-
-        let line = svg.append('g')
-            .attr("clip-path", "url(#clip)")
+            .on("end", updateChart) 
+            
+        let line = new Array(dataLen);
+        for (i = 0; i < dataLen; i++)
+        {
+            line[i] = svg.append('g')
+                .attr("clip-path", "url(#clip)");
+        }
 
         // Add lines
-        for (i = 0; i < dataName.length; i++) {
-            line.append("path")
+        for (i = 0; i < dataLen; i++) {
+            line[i].append("path")
                 .datum(t02)
                 .attr("class", "line")
                 .attr("fill", "none")
@@ -101,7 +107,10 @@ function linechartPlot() {
                 .y(function(d) { return yScale(d[dataName[i]]) })
             );          
 
-            line.append("g")
+        }
+
+        for (i = 0; i < dataLen; i++) {
+            line[i].append("g")
                 .attr("class", "brush")
                 .call(brush);
         }
@@ -133,9 +142,9 @@ function linechartPlot() {
                 .tickSize(-_height)
                 .tickFormat(""));
                 
-        for (i = 1; i <= dataName.length; i++) {
-            svg.append("circle").attr("cx",_width / (dataName.length + 1) * i).attr("cy", -10).attr("r", 6).style("fill", dataColor[i - 1]);
-            svg.append("text").attr("x", _width / (dataName.length + 1) * i + 8).attr("y",-5).text(dataLegend[i-1]).style("font-size", "15px").attr("alignment-baseline","middle");
+        for (i = 1; i <= dataLen; i++) {
+            svg.append("circle").attr("cx",_width / (dataLen + 1) * i).attr("cy", -10).attr("r", 6).style("fill", dataColor[i - 1]);
+            svg.append("text").attr("x", _width / (dataLen + 1) * i + 8).attr("y",-5).text(dataLegend[i-1]).style("font-size", "15px").attr("alignment-baseline","middle");
         }
 
         let idleTimeout
@@ -143,59 +152,55 @@ function linechartPlot() {
 
         // Update the chart given boundaries
         function updateChart() {
-            // Get selected boundaries?
-            extent = d3.event.selection;
 
-            console.log(extent)
+            // Get selected boundaries
+            extent = d3.event.selection;
 
             // If no selection, back to initial coordinate. Otherwise, update X axis domain
             if(!extent) {
-                if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
-                // xScale.domain([ 4,8])
+                if (!idleTimeout) 
+                    return idleTimeout = setTimeout(idled, 350);
             }
             else {
                 xScale.domain([ xScale.invert(extent[0]), xScale.invert(extent[1]) ])
-                line.select(".brush").call(brush.move, null) // This remove the grey brush area as soon as the selection has been done
+                
+                for (i = 0; i < dataLen; i++) {
+                    // Remove the grey area
+                    line[i].select(".brush").call(brush.move, null)
+                }
             }
 
             // Update axis and line position
             xAxis.transition().duration(1000)
                 .call(d3.axisBottom(xScale))
-            for (i = 0; i < dataName.length; i++) {
-                line
+                
+            for (i = 0; i < dataLen; i++) {
+                line[i]
                     .select('.line')
                     .datum(t02)
                     .transition()
                     .duration(1000)
-                    .attr("fill", "none")
-                    .attr("stroke", dataColor[i])
-                    .attr("stroke-width", 2)
                     .attr("d", d3.line()
                     .x(function(d) { return xScale(d.time - minTime) })
                     .y(function(d) { return yScale(d[dataName[i]]) })
                 ); 
             }
-
-
         }
 
         // If user double-clicks, reinitialize the chart
         svg.on("dblclick",function(){
             xScale.domain(d3.extent(data, function(d) { return d.time - minTime; }))
             xAxis.transition().call(d3.axisBottom(xScale))
-            for (i = 0; i < dataName.length; i++) {
-                line
+            for (i = 0; i < dataLen; i++) {
+                line[i]
                     .select('.line')
                     .transition()
-                    .attr("class", "line")
-                    .attr("fill", "none")
-                    .attr("stroke", dataColor[i])
-                    .attr("stroke-width", 2)
                     .attr("d", d3.line()
                     .x(function(d) { return xScale(d.time - minTime) })
                     .y(function(d) { return yScale(d[dataName[i]]) })
                 );  
             }
+            
         });
            
 

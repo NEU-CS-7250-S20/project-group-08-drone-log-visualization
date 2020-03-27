@@ -34,7 +34,7 @@
         linechartPlot().width(450).height(400).dataColor(["red", "blue", "green"]).dataName(["accX", "accY", "accZ"]).dataLegend(["aX [mps]", "aY [mps]", "aZ [mps]"])("#line-chart-4", t02);
         linechartPlot().width(450).height(400).dataColor(["red", "blue", "green"]).dataName(["P", "Q", "R"]).dataLegend(["p [rps]", "q [rps]", "r [rps]"])("#line-chart-5", t02);
         linechartPlot().width(450).height(400).dataColor(["red"]).dataName(["groundSpeed"]).dataLegend(["gndS [km/h]"])("#line-chart-6", t02);
-        linechartPlot().width(450).height(400).dataColor(["red"]).dataName(["windSpeed"]).dataLegend(["TAS [km/h]"])("#line-chart-7", t02);
+        linechartPlot().width(450).height(400).dataColor(["red"]).dataName(["windSpeed"]).dataLegend(["windS [km/h]"])("#line-chart-7", t02);
     });
 
 })());
