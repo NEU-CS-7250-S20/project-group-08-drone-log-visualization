@@ -8,7 +8,7 @@ function mapplot() {
 
     let dispatch = d3.dispatch(updateMap);
 
-    function chart(mapSelector, sliderSelector, data) {
+    function chart(mapSelector, sliderSelector, data, pathSegments) {
 
         // get the average longitude and latitude; this will be our starting point for the map *for now*
         let t02 = data;
@@ -33,8 +33,9 @@ function mapplot() {
 
 
          */
-        // subsample data and setup google map
-        let t02Subset = subsample(t02, maxPoints);
+        // setup google map
+        let t02Subset = t02;
+        let pathSegmentsSubset = pathSegments;
 
         let map = new google.maps.Map(d3.select(mapSelector).node(), {
             zoom: 15,
@@ -74,11 +75,9 @@ function mapplot() {
                 // get new path data
                 let tmpStartPoint = Math.round(val[0] * t02.length);
                 let tmpEndPoint = Math.round(val[1] * t02.length);
-                let tmpNumPoints = tmpEndPoint - tmpStartPoint;
-                let tmpT02 = t02.slice(tmpStartPoint, tmpEndPoint);
-                let tmpMaxPoints = Math.min(tmpNumPoints, maxPoints);
 
-                t02Subset = subsample(tmpT02, tmpMaxPoints);
+                t02Subset = t02.slice(tmpStartPoint, tmpEndPoint);
+                pathSegmentsSubset = moveSegments(pathSegments, tmpStartPoint);
                 coordinates = objectsToGMapsCoordinates(t02Subset);
 
                 // update map
@@ -108,7 +107,7 @@ function mapplot() {
 
             // remove old path and add a new one
             removeFromMap(flightPaths);
-            flightPaths = addPath(coordinates, map, selectStartIdx, selectEndIdx);
+            flightPaths = addPath(coordinates, map, pathSegmentsSubset);
 
             // add listeners for on hover
             for (i = 0; i < flightPaths.length; i++) {
@@ -134,57 +133,38 @@ function mapplot() {
         // update map
         dispatch.call(updateMap);
 
-        function addPath(coordinates, map, selectionStartIdx = null, selectionEndIdx = null) {
+        function addPath(coordinates, map, pathSegments) {
 
-            if (selectionStartIdx !== null && selectionEndIdx !== null) {
-                // TODO: what if start idx is 0 or end idx is coordinates.length - 1
-                let coords1 = coordinates.slice(0, selectionStartIdx + 1),
-                    coordsSelection = coordinates.slice(selectionStartIdx, selectionEndIdx  + 1),
-                    coords2 = coordinates.slice(selectionEndIdx, coordinates.length);
+            let paths = [];
 
-                let p1 = new google.maps.Polyline({
-                    path: coords1,
+            pathSegments.forEach(segment => {
+                let coords = coordinates.slice(segment.start, segment.end + 1);
+                let color;
+
+                if (segment.type === SEGMENT_NORMAL) {
+                    color = "#19ff58";
+                } else if (segment.type === SEGMENT_SENSOR_ERROR) {
+                    color = "#fffe3c";
+                } else if (segment.type === SEGMENT_GPS_ERROR) {
+                    color = "#ffb21d";
+                } else {
+                    color = "#ff341b";
+                }
+
+                let path = new google.maps.Polyline({
+                    path: coords,
                     geodesic: true,
-                    strokeColor: '#FF0000',
+                    strokeColor: color,
                     strokeOpacity: 1.0,
                     strokeWeight: mapStrokeWeight
                 });
-                p1.setMap(map);
+                path.setMap(map);
 
-                let p2 = new google.maps.Polyline({
-                    path: coordsSelection,
-                    geodesic: true,
-                    strokeColor: '#fffe43',
-                    strokeOpacity: 1.0,
-                    strokeWeight: mapStrokeWeight
-                });
-                p2.setMap(map);
+                paths.push(path);
 
-                let p3 = new google.maps.Polyline({
-                    path: coords2,
-                    geodesic: true,
-                    strokeColor: '#FF0000',
-                    strokeOpacity: 1.0,
-                    strokeWeight: mapStrokeWeight
-                });
-                p3.setMap(map);
+            });
 
-                return [p1, p2, p3];
-
-            } else {
-
-                let flightPath = new google.maps.Polyline({
-                    path: coordinates,
-                    geodesic: true,
-                    strokeColor: '#FF0000',
-                    strokeOpacity: 1.0,
-                    strokeWeight: mapStrokeWeight
-                });
-
-                flightPath.setMap(map);
-                return [flightPath];
-
-            }
+            return paths;
         }
 
         function removeFromMap(elements) {
@@ -283,6 +263,33 @@ function mapplot() {
                 // selection started
                 selectStartIdx = index;
             }
+        }
+
+        function moveSegments(segments, startIdx) {
+
+            let newSegments = [];
+
+            segments.forEach(segment => {
+
+                let segmentStart = segment.start - startIdx;
+                let segmentEnd = segment.end - startIdx;
+
+                if (segmentEnd > 0) {
+                    if (segmentStart < 0) {
+                        segmentStart = 0;
+                    }
+
+                    newSegments.push({
+                        start: segmentStart,
+                        end: segmentEnd,
+                        type: segment.type
+                    });
+                }
+
+            });
+
+            return newSegments;
+
         }
 
     }

@@ -1,3 +1,12 @@
+const RADIO_LINK_BROKEN_MSG = "smon: Radio link broken";
+const RADIO_LINK_RESTORED_MSG = "smon: Radio link restored";
+
+const SEGMENT_NORMAL = 0;
+const SEGMENT_SENSOR_ERROR = 1;
+const SEGMENT_GPS_ERROR = 2;
+const SEGMENT_LINK_ERROR = 3;
+
+
 function objectsToGMapsCoordinates(objects) {
     // extract coordinates from data object and put them in a format for google maps js API
     let coords = [];
@@ -34,6 +43,290 @@ function subsample(data, num) {
 
     return newData;
 }
+
+function parseLog(log) {
+    // parse log text file
+    let newLog = [];
+    let splitLines = log.split("\r\n");
+
+    for (i = 0; i < splitLines.length; i++) {
+        let line = splitLines[i];
+        let split = line.split(":");
+
+        if (split.length > 2) {
+            let time = parseFloat(split[2]);
+            let message = split.slice(3, split.length).join(":");
+            message = message.trim();
+            newLog.push({
+                time: time,
+                message: message
+            })
+        }
+    }
+
+    return newLog;
+
+}
+
+function getLinkErrorsFromLog(log) {
+    // get link error segments from log messages
+    let linkErrors = [];
+    let errorStart = null;
+
+    for (i = 0; i < log.length; i++) {
+
+        let logItem = log[i];
+
+        if (logItem.message === RADIO_LINK_BROKEN_MSG) {
+            if (errorStart === null) {
+                // error logged
+                errorStart = logItem.time;
+            }
+        } else if (logItem.message === RADIO_LINK_RESTORED_MSG) {
+            if (errorStart !== null) {
+                // error resolved
+                linkErrors.push({
+                    start: errorStart,
+                    end: logItem.time
+                });
+                errorStart = null;
+            }
+        }
+
+    }
+
+    if (errorStart !== null) {
+        // error was never resolved, continue until the last time step
+        linkErrors.push({
+            start: errorStart,
+            end: log[log.length - 1].time
+        })
+    }
+
+    return linkErrors;
+
+}
+
+
+function getGPSErrorsFromT15(t15) {
+
+    let GPSErrors = [];
+    let GPSErrorStart = null;
+
+    for (i = 0; i < t15.length; i++) {
+
+        let line = t15[i];
+
+        if (line.gpsErr === 1) {
+            if (GPSErrorStart === null) {
+                GPSErrorStart = line.time;
+            }
+        } else if (line.gpsErr === 0) {
+            if (GPSErrorStart !== null) {
+                GPSErrors.push({
+                    start: GPSErrorStart,
+                    end: line.time
+                });
+                GPSErrorStart = null;
+            }
+        }
+
+    }
+
+    if (GPSErrorStart !== null) {
+        // error was never resolved, continue until the last time step
+        GPSErrors.push({
+            start: GPSErrorStart,
+            end: t15[t15.length - 1].time
+        })
+    }
+
+    return GPSErrors;
+
+}
+
+function getSensorErrorsFromT15(t15) {
+
+    let sensorErrors = [];
+    let sensorErrorStart = null;
+
+    for (i = 0; i < t15.length; i++) {
+
+        let line = t15[i];
+
+        if (line.sensorErr === 1) {
+            if (sensorErrorStart === null) {
+                sensorErrorStart = line.time;
+            }
+        } else if (line.sensorErr === 0) {
+            if (sensorErrorStart !== null) {
+                sensorErrors.push({
+                    start: sensorErrorStart,
+                    end: line.time
+                });
+                sensorErrorStart = null;
+            }
+        }
+
+    }
+
+    if (sensorErrorStart !== null) {
+        // error was never resolved, continue until the last time step
+        sensorErrors.push({
+            start: sensorErrorStart,
+            end: t15[t15.length - 1].time
+        })
+    }
+
+    return sensorErrors;
+
+}
+
+
+function errorTimesIntoT2Indices(errors, t2) {
+
+    let newErrors = [];
+
+    for (i = 0; i < errors.length; i++) {
+        newErrors.push({
+            start: null,
+            end: null
+        })
+    }
+
+    for (i = 0; i < t2.length; i++) {
+        let currentTime = t2[i].time;
+        for (j = 0; j < errors.length; j++) {
+            if (currentTime >= errors[j].start && newErrors[j].start === null) {
+                newErrors[j].start = i;
+            } else if (currentTime >= errors[j].end && newErrors[j].end === null) {
+                // this else if enforces that an error does not start and end at the same time step
+                newErrors[j].end = i;
+            }
+        }
+    }
+
+    return newErrors;
+
+}
+
+
+function errorsIntoPathSegments(linkErrors, gpsErrors, sensorErrors, t02) {
+
+    let segments = [];
+
+    // add sensor errors (lowest priority)
+    sensorErrors.forEach(error => {
+        segments.push({
+            start: error.start,
+            end: error.end,
+            type: SEGMENT_SENSOR_ERROR
+        });
+    });
+
+    // add gps errors (medium priority) and maybe modify sensor errors so that there aren't any overlaps
+    gpsErrors.forEach(error => {
+        let toDelete = [];
+        segments.forEach((segment, index) => {
+            if ((segment.start >= error.start && segment.end <= error.end) ||
+                (segment.start <= error.start && segment.end >= error.end)) {
+                // another segment is inside the current segment
+                // the current segment has higher priority, so the prior one will be deleted
+                toDelete.push(index);
+            } else if (segment.start <= error.end && segment.end > error.end) {
+                // segment starts in the middle of the error and ends after it
+                // move its start point
+                segment.start = error.end;
+            } else if (segment.start < error.start && segment.end > error.start) {
+                // segment start before the error and ends in the middle of it
+                // move its end point
+                segment.end = error.start;
+            }
+        });
+
+        if (toDelete.length > 0) {
+            for (i = toDelete.length - 1; i >= 0; i--) {
+                segments.splice(toDelete[i], 1);
+            }
+        }
+
+        segments.push({
+            start: error.start,
+            end: error.end,
+            type: SEGMENT_GPS_ERROR
+        })
+    });
+
+    // add link errors (highest priority) and maybe modify all the previous errors
+    linkErrors.forEach(error => {
+        let toDelete = [];
+        segments.forEach((segment, index) => {
+            if ((segment.start >= error.start && segment.end <= error.end) ||
+                (segment.start <= error.start && segment.end >= error.end)) {
+                // another segment is inside the current segment
+                // the current segment has higher priority, so the prior one will be deleted
+                toDelete.push(index);
+            } else if (segment.start <= error.end && segment.end > error.end) {
+                // segment starts in the middle of the error and ends after it
+                // move its start point
+                segment.start = error.end;
+            } else if (segment.start < error.start && segment.end > error.start) {
+                // segment start before the error and ends in the middle of it
+                // move its end point
+                segment.end = error.start;
+            }
+        });
+
+        if (toDelete.length > 0) {
+            for (i = toDelete.length - 1; i >= 0; i--) {
+                segments.splice(toDelete[i], 1);
+            }
+        }
+
+        segments.push({
+            start: error.start,
+            end: error.end,
+            type: SEGMENT_LINK_ERROR
+        })
+    });
+
+    // sort errors by time ascending
+    segments.sort((a, b) => {
+        return a.start > b.start;
+    });
+
+    // add path segments, where no errors happened
+    let toAdd = [];
+    let toAddIndices = [];
+
+    segments.forEach((segment, index) => {
+        if (index === 0 && segment.start > 0) {
+            toAdd.push({
+                start: 0,
+                end: segment.start,
+                type: SEGMENT_NORMAL
+            });
+            toAddIndices.push(index);
+        } else if ((index !== segments.length - 1) && (segment.end !== segments[index + 1].start)) {
+            toAdd.push({
+                start: segment.end,
+                end: segments[index + 1].start,
+                type: SEGMENT_NORMAL
+            });
+            toAddIndices.push(index + 1);
+        }
+    });
+
+    if (toAdd.length > 0) {
+        for (let i = toAdd.length - 1; i >= 0; i--) {
+            segments.splice(toAddIndices[i], 0, toAdd[i]);
+        }
+    }
+
+    return segments;
+
+}
+
 
 function parseT02(d) {
     // parse a single line of telemetry 2
