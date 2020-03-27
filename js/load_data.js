@@ -107,7 +107,6 @@ function getLinkErrorsFromLog(log) {
 
 }
 
-
 function getGPSErrorsFromT15(t15) {
 
     let GPSErrors = [];
@@ -117,7 +116,7 @@ function getGPSErrorsFromT15(t15) {
 
         let line = t15[i];
 
-        if (line.gpsErr === 1) {
+        if (line.gpsErr >= 1) {
             if (GPSErrorStart === null) {
                 GPSErrorStart = line.time;
             }
@@ -154,7 +153,7 @@ function getSensorErrorsFromT15(t15) {
 
         let line = t15[i];
 
-        if (line.sensorErr === 1) {
+        if (line.sensorErr >= 1) {
             if (sensorErrorStart === null) {
                 sensorErrorStart = line.time;
             }
@@ -182,7 +181,6 @@ function getSensorErrorsFromT15(t15) {
 
 }
 
-
 function errorTimesIntoT2Indices(errors, t2) {
 
     let newErrors = [];
@@ -209,7 +207,6 @@ function errorTimesIntoT2Indices(errors, t2) {
     return newErrors;
 
 }
-
 
 function errorsIntoPathSegments(linkErrors, gpsErrors, sensorErrors, t02) {
 
@@ -326,7 +323,6 @@ function errorsIntoPathSegments(linkErrors, gpsErrors, sensorErrors, t02) {
     return segments;
 
 }
-
 
 function parseT02(d) {
     // parse a single line of telemetry 2
