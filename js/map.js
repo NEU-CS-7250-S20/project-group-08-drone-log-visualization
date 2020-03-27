@@ -36,6 +36,10 @@ function mapplot() {
         // setup google map
         let t02Subset = t02;
         let pathSegmentsSubset = pathSegments;
+        let pathMarkerData = getErrorMarkersForSegments(pathSegmentsSubset);
+        let pathMarkers = [];
+        let startPoint = 0,
+            endPoint = t02.length - 1;
 
         let map = new google.maps.Map(d3.select(mapSelector).node(), {
             zoom: 15,
@@ -73,12 +77,13 @@ function mapplot() {
             .on('onchange', function(val) {
 
                 // get new path data
-                let tmpStartPoint = Math.round(val[0] * t02.length);
-                let tmpEndPoint = Math.round(val[1] * t02.length);
+                startPoint = Math.round(val[0] * t02.length);
+                endPoint = Math.round(val[1] * t02.length);
 
-                t02Subset = t02.slice(tmpStartPoint, tmpEndPoint);
-                pathSegmentsSubset = moveSegments(pathSegments, tmpStartPoint);
+                t02Subset = t02.slice(startPoint, endPoint);
+                pathSegmentsSubset = moveSegments(pathSegments, startPoint);
                 coordinates = objectsToGMapsCoordinates(t02Subset);
+                pathMarkerData = getErrorMarkersForSegments(pathSegmentsSubset);
 
                 // update map
                 dispatch.call(updateMap);
@@ -127,6 +132,49 @@ function mapplot() {
             removeFromMap([startMarker, endMarker]);
             startMarker = addMarker(coordinates[0], "S", map);
             endMarker = addMarker(coordinates[coordinates.length - 1], "E", map);
+
+            removeFromMap(pathMarkers);
+            pathMarkers = [];
+            pathMarkerData.forEach(marker => {
+
+                let text;
+
+                if (marker.type === SEGMENT_GPS_ERROR)
+                    text = "GS";
+                else if (marker.type === SEGMENT_SENSOR_ERROR)
+                    text = "SE";
+                else
+                    text = "LI";
+
+                let tmpMarker = addMarker(coordinates[marker.index], text, map);
+
+                tmpMarker.addListener("click", function() {
+
+                    // get new path data
+                    console.log(startPoint, endPoint);
+
+                    endPoint = pathSegmentsSubset[marker.segmentIndex].end + startPoint + 20;
+                    startPoint = pathSegmentsSubset[marker.segmentIndex].start + startPoint - 20;
+
+                    console.log(startPoint, endPoint);
+
+                    if (startPoint < 0)
+                        startPoint = 0;
+                    if (endPoint > t02.length - 1)
+                        endPoint = t02.length - 1;
+
+                    t02Subset = t02.slice(startPoint, endPoint);
+                    pathSegmentsSubset = moveSegments(pathSegments, startPoint);
+                    coordinates = objectsToGMapsCoordinates(t02Subset);
+                    pathMarkerData = getErrorMarkersForSegments(pathSegmentsSubset);
+
+                    // update map
+                    dispatch.call(updateMap);
+
+                });
+
+                pathMarkers.push(tmpMarker);
+            });
 
         });
 
@@ -289,6 +337,25 @@ function mapplot() {
             });
 
             return newSegments;
+
+        }
+
+        function getErrorMarkersForSegments(segments) {
+
+            let markers = [];
+
+            segments.forEach((segment, index) => {
+                if (segment.type !== SEGMENT_NORMAL) {
+                    let middleIndex = Math.round((segment.end - segment.start) / 2) + segment.start;
+                    markers.push({
+                        index: middleIndex,
+                        type: segment.type,
+                        segmentIndex: index
+                    });
+                }
+            });
+
+            return markers;
 
         }
 
