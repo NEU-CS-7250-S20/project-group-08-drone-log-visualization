@@ -188,17 +188,3 @@ html, body, #map {
 .grid path {
 	stroke-width: 0;
 }
-
-/* Zoom options */
-.zoom {
-	cursor: move;
-	fill: none;
-	pointer-events: all;
-  }
-
-.line {
-	fill: none;
-	stroke: steelblue;
-	stroke-width: 1.5px;
-}
-  
