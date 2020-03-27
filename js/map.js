@@ -239,8 +239,8 @@ function mapplot() {
                 airSpeed = t02Subset[index].airSpeed;
 
             popupContent.html(
-                "Altitude: " + altitude.toFixed(2) + " m" +
-                "<br/>Air speed: " + airSpeed.toFixed(2) + " km/h"
+                altitude.toFixed(2) + " m" +
+                "<br/>" + airSpeed.toFixed(2) + " km/h"
             );
         }
 
