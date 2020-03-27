@@ -151,25 +151,15 @@ function mapplot() {
                 tmpMarker.addListener("click", function() {
 
                     // get new path data
-                    console.log(startPoint, endPoint);
-
                     endPoint = pathSegmentsSubset[marker.segmentIndex].end + startPoint + 20;
                     startPoint = pathSegmentsSubset[marker.segmentIndex].start + startPoint - 20;
-
-                    console.log(startPoint, endPoint);
 
                     if (startPoint < 0)
                         startPoint = 0;
                     if (endPoint > t02.length - 1)
                         endPoint = t02.length - 1;
 
-                    t02Subset = t02.slice(startPoint, endPoint);
-                    pathSegmentsSubset = moveSegments(pathSegments, startPoint);
-                    coordinates = objectsToGMapsCoordinates(t02Subset);
-                    pathMarkerData = getErrorMarkersForSegments(pathSegmentsSubset);
-
-                    // update map
-                    dispatch.call(updateMap);
+                    slider.value([startPoint / t02.length, endPoint / t02.length]);
 
                 });
 
