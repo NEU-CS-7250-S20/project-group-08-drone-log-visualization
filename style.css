@@ -188,3 +188,10 @@ html, body, #map {
 .grid path {
 	stroke-width: 0;
 }
+
+/* Zoom style */
+.zoom {
+	cursor: move;
+	fill: none;
+	pointer-events: all;
+}

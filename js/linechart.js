@@ -162,22 +162,16 @@ function linechartPlot() {
                     return idleTimeout = setTimeout(idled, 350);
             }
             else {
-                xScale.domain([ xScale.invert(extent[0]), xScale.invert(extent[1]) ])
-                
-                for (i = 0; i < dataLen; i++) {
-                    // Remove the grey area
-                    line[i].select(".brush").call(brush.move, null)
-                }
+                xScale.domain([ xScale.invert(extent[0]), xScale.invert(extent[1])])
             }
 
             // Update axis and line position
             xAxis.transition().duration(1000)
                 .call(d3.axisBottom(xScale))
-                
+
             for (i = 0; i < dataLen; i++) {
                 line[i]
                     .select('.line')
-                    .datum(t02)
                     .transition()
                     .duration(1000)
                     .attr("d", d3.line()
@@ -202,7 +196,6 @@ function linechartPlot() {
             }
             
         });
-           
 
     }
 
