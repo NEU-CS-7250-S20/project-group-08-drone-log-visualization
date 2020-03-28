@@ -26,7 +26,7 @@
 
         let pathSegments = errorsIntoPathSegments(linkErrors, gpsErrors, sensorErrors, t02);
 
-        mapplot().width(0.5).height(0.5).maxPoints(10000).mapStrokeWeight(3)("#map", "div#map-slider", t02, pathSegments);
+        mapplot().width(0.5).height(0.5).mapStrokeWeight(3)("#map", "div#map-slider", t02, pathSegments);
         linechartPlot().width(450).height(400).dataColor(["red"]).dataName(["groundSpeed"]).dataLegend(["gndS [km/h]"])("#line-chart-1", t02);
         linechartPlot().width(450).height(400).dataColor(["blue", "red"]).dataName(["airSpeed", "altitude"]).dataLegend(["AirS [km/h]", "Alt [m]"])("#line-chart-big", t02);
         linechartPlot().width(450).height(400).dataColor(["red"]).dataName(["airSpeed"]).dataLegend(["AirS [km/h]"])("#line-chart-2", t02);

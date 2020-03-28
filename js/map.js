@@ -2,8 +2,7 @@ function mapplot() {
 
     let width = 1.0,
         height = 1.0,
-        maxPoints = 100,
-        mapStrokeWeight= 2;
+            mapStrokeWeight= 2;
     const updateMap = "updateMap";
 
     let dispatch = d3.dispatch(updateMap);
@@ -360,12 +359,6 @@ function mapplot() {
     chart.height = function(_) {
         if (!arguments.length) return height;
         height = _;
-        return chart;
-    };
-
-    chart.maxPoints = function(_) {
-        if (!arguments.length) return maxPoints;
-        maxPoints = _;
         return chart;
     };
 
