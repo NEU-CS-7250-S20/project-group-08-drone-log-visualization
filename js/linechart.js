@@ -1,9 +1,14 @@
 function linechartPlot() {
 
+    const BRUSHING_STRING = "brushing";
+
     let width = 460, height = 200;
     let dataColor = "red";
     let dataName="altitude";
     let dataLegend = "Altitude [m]";
+
+    let data2draw, minTime, maxTime;
+    let brushingDispatcher = d3.dispatch(BRUSHING_STRING);
 
     function chart(selector, data) {
 
@@ -29,7 +34,7 @@ function linechartPlot() {
 
         let dataLen = dataName.length;
 
-        let data2draw = new Array(dataLen);
+        data2draw = new Array(dataLen);
         let minData = new Array(dataLen);
         let maxData = new Array(dataLen);
 
@@ -84,8 +89,10 @@ function linechartPlot() {
 
         // add brushing
         let brush = d3.brushX()                   
-            .extent( [ [0,0], [_width,_height] ] )  
-            .on("end", updateChart) 
+            .extent( [ [0,0], [_width,_height] ] )
+            .on("end", function(d) {
+                brushingDispatcher.call(BRUSHING_STRING, this, [d3.event.selection, true]);
+            });
             
         let line = new Array(dataLen);
         for (i = 0; i < dataLen; i++)
@@ -151,10 +158,16 @@ function linechartPlot() {
         function idled() { idleTimeout = null; }
 
         // Update the chart given boundaries
-        function updateChart() {
+        brushingDispatcher.on(BRUSHING_STRING, function(d) {
+            updateChart(d[0], d[1]);
+        });
+
+        function updateChart(d, invertExtend=true) {
+
+            console.log(d);
 
             // Get selected boundaries
-            extent = d3.event.selection;
+            extent = d;
 
             // If no selection, back to initial coordinate. Otherwise, update X axis domain
             if(!extent) {
@@ -162,7 +175,11 @@ function linechartPlot() {
                     return idleTimeout = setTimeout(idled, 350);
             }
             else {
-                xScale.domain([ xScale.invert(extent[0]), xScale.invert(extent[1])])
+                if (invertExtend) {
+                    xScale.domain([ xScale.invert(extent[0]), xScale.invert(extent[1])])
+                } else {
+                    xScale.domain([ extent[0], extent[1]])
+                }
             }
 
             // Update axis and line position
@@ -197,6 +214,8 @@ function linechartPlot() {
             
         });
 
+        return chart;
+
     }
 
     chart.width = function(_) {
@@ -227,7 +246,26 @@ function linechartPlot() {
         if (!arguments.length) return dataLegend;
         dataLegend = _;
         return chart;
-    };      
+    };
+
+    chart.updateSelection = function(selectedData) {
+
+        if (!arguments.length) return;
+
+        let period = maxTime - minTime;
+
+        let fracStart = selectedData[0] / data2draw[0].length;
+        let fracEnd = selectedData[1] / data2draw[0].length;
+
+        let startTime = period * fracStart;
+        let endTime = period * fracEnd;
+
+        console.log(startTime, endTime);
+
+        //d3.event.selection = [startTime, endTime];
+        brushingDispatcher.call(BRUSHING_STRING, this, [[startTime, endTime], false]);
+
+    };
 
     return chart;
 

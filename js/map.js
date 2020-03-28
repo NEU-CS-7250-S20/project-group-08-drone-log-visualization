@@ -1,11 +1,13 @@
 function mapplot() {
 
+    const UPDATE_MAP_STRING = "updateMap";
+
     let width = 1.0,
         height = 1.0,
-            mapStrokeWeight= 2;
-    const updateMap = "updateMap";
+        mapStrokeWeight= 2,
+        selectionDispatcher;
 
-    let dispatch = d3.dispatch(updateMap);
+    let updateMapDispatcher = d3.dispatch(UPDATE_MAP_STRING);
 
     function chart(mapSelector, sliderSelector, data, pathSegments) {
 
@@ -85,7 +87,11 @@ function mapplot() {
                 pathMarkerData = getErrorMarkersForSegments(pathSegmentsSubset);
 
                 // update map
-                dispatch.call(updateMap);
+                updateMapDispatcher.call(UPDATE_MAP_STRING);
+
+                // propagate selection
+                let dispatchString = Object.getOwnPropertyNames(selectionDispatcher._)[0];
+                selectionDispatcher.call(dispatchString, this, [startPoint, endPoint]);
 
             });
 
@@ -104,7 +110,7 @@ function mapplot() {
         map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(d3.select(sliderSelector).node());
 
         // setup map update function
-        dispatch.on(updateMap, function(d) {
+        updateMapDispatcher.on(UPDATE_MAP_STRING, function(d) {
 
             // make sure slider is shown
             d3.select(sliderSelector).attr("hidden", null);
@@ -158,6 +164,7 @@ function mapplot() {
                     if (endPoint > t02.length - 1)
                         endPoint = t02.length - 1;
 
+                    // set slider value, which triggers map update
                     slider.value([startPoint / t02.length, endPoint / t02.length]);
 
                 });
@@ -168,7 +175,7 @@ function mapplot() {
         });
 
         // update map
-        dispatch.call(updateMap);
+        updateMapDispatcher.call(UPDATE_MAP_STRING);
 
         function addPath(coordinates, map, pathSegments) {
 
@@ -280,7 +287,7 @@ function mapplot() {
                 // reset previous selection
                 selectStartIdx = null;
                 selectEndIdx = null;
-                dispatch.call(updateMap);
+                updateMapDispatcher.call(UPDATE_MAP_STRING);
             }
 
             if (selectStartIdx !== null) {
@@ -294,7 +301,7 @@ function mapplot() {
                 }
 
                 // update map
-                dispatch.call(updateMap);
+                updateMapDispatcher.call(UPDATE_MAP_STRING);
 
             } else {
                 // selection started
@@ -348,6 +355,8 @@ function mapplot() {
 
         }
 
+        return chart;
+
     }
 
     chart.width = function(_) {
@@ -365,6 +374,12 @@ function mapplot() {
     chart.mapStrokeWeight = function(_) {
         if (!arguments.length) return mapStrokeWeight;
         mapStrokeWeight = _;
+        return chart;
+    };
+
+    chart.selectionDispatcher = function(_) {
+        if (!arguments.length) return selectionDispatcher;
+        selectionDispatcher = _;
         return chart;
     };
 
