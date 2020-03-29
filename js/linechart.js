@@ -7,7 +7,7 @@ function linechartPlot() {
     let dataName="altitude";
     let dataLegend = "Altitude [m]";
 
-    let data2draw, minTime, maxTime;
+    let data2draw, minTime, maxTime, selectionDispatcher;
     let brushingDispatcher = d3.dispatch(BRUSHING_STRING);
 
     function chart(selector, data) {
@@ -189,8 +189,8 @@ function linechartPlot() {
             for (i = 0; i < dataLen; i++) {
                 line[i]
                     .select('.line')
-                    .transition()
-                    .duration(1000)
+                    //.transition()
+                    //.duration(1000)
                     .attr("d", d3.line()
                     .x(function(d) { return xScale(d.time - minTime) })
                     .y(function(d) { return yScale(d[dataName[i]]) })
@@ -265,6 +265,12 @@ function linechartPlot() {
         //d3.event.selection = [startTime, endTime];
         brushingDispatcher.call(BRUSHING_STRING, this, [[startTime, endTime], false]);
 
+    };
+
+    chart.selectionDispatcher = function(_) {
+        if (!arguments.length) return selectionDispatcher;
+        selectionDispatcher = _;
+        return chart;
     };
 
     return chart;
