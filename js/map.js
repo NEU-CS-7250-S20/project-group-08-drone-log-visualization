@@ -5,14 +5,20 @@ function mapplot() {
     let width = 1.0,
         height = 1.0,
         mapStrokeWeight= 2,
-        selectionDispatcher;
+        selectionDispatcher,
+        slider,
+        minTime,
+        timeLength,
+        startPoint,
+        endPoint,
+        t02;
 
     let updateMapDispatcher = d3.dispatch(UPDATE_MAP_STRING);
 
     function chart(mapSelector, sliderSelector, data, pathSegments) {
 
         // get the average longitude and latitude; this will be our starting point for the map *for now*
-        let t02 = data;
+        t02 = data;
         let lat = [], lon = [];
 
         for (i = 0; i < t02.length; i++) {
@@ -36,11 +42,14 @@ function mapplot() {
          */
         // setup google map
         let t02Subset = t02;
+        minTime = t02[0].time;
+        let maxTime = t02[t02.length - 1].time;
+        timeLength = maxTime - minTime;
         let pathSegmentsSubset = pathSegments;
         let pathMarkerData = getErrorMarkersForSegments(pathSegmentsSubset);
         let pathMarkers = [];
-        let startPoint = 0,
-            endPoint = t02.length - 1;
+        startPoint = 0;
+        endPoint = t02.length - 1;
 
         let map = new google.maps.Map(d3.select(mapSelector).node(), {
             zoom: 15,
@@ -67,31 +76,19 @@ function mapplot() {
         let endMarker = null;
 
         // setup slider
-        let slider = d3.sliderBottom()
-            .min(0.0)
-            .max(1.0)
+        slider = d3.sliderBottom()
+            .min(0)
+            .max(timeLength)
             .width(800) // TODO: should be relative
-            .tickFormat(d3.format('.2'))
-            .ticks(5)
-            .default([0.0, 1.0])
+            //.tickFormat(d3.format('.2'))
+            .ticks(10)
+            .default([0.0, timeLength])
             .fill("#2196f3")
             .on('onchange', function(val) {
 
-                // get new path data
-                startPoint = Math.round(val[0] * t02.length);
-                endPoint = Math.round(val[1] * t02.length);
-
-                t02Subset = t02.slice(startPoint, endPoint);
-                pathSegmentsSubset = moveSegments(pathSegments, startPoint);
-                coordinates = objectsToGMapsCoordinates(t02Subset);
-                pathMarkerData = getErrorMarkersForSegments(pathSegmentsSubset);
-
-                // update map
-                updateMapDispatcher.call(UPDATE_MAP_STRING);
-
                 // propagate selection
                 let dispatchString = Object.getOwnPropertyNames(selectionDispatcher._)[0];
-                selectionDispatcher.call(dispatchString, this, [startPoint, endPoint]);
+                selectionDispatcher.call(dispatchString, this, [val[0], val[1]]);
 
             });
 
@@ -114,6 +111,12 @@ function mapplot() {
 
             // make sure slider is shown
             d3.select(sliderSelector).attr("hidden", null);
+
+            // get data
+            t02Subset = t02.slice(startPoint, endPoint);
+            pathSegmentsSubset = moveSegments(pathSegments, startPoint);
+            coordinates = objectsToGMapsCoordinates(t02Subset);
+            pathMarkerData = getErrorMarkersForSegments(pathSegmentsSubset);
 
             // remove old path and add a new one
             removeFromMap(flightPaths);
@@ -165,7 +168,7 @@ function mapplot() {
                         endPoint = t02.length - 1;
 
                     // set slider value, which triggers map update
-                    slider.value([startPoint / t02.length, endPoint / t02.length]);
+                    slider.value([t02[startPoint].time - minTime, t02[endPoint].time - minTime]);
 
                 });
 
@@ -382,6 +385,56 @@ function mapplot() {
         selectionDispatcher = _;
         return chart;
     };
+
+    chart.updateSelection = function(selectedData) {
+
+        if (!arguments.length) return;
+
+        let startTime, endTime;
+
+        if (selectedData === null) {
+            startTime = 0;
+            endTime = timeLength;
+        } else {
+            startTime = selectedData[0];
+            endTime = selectedData[1];
+        }
+
+        slider.silentValue([startTime, endTime]);
+
+        let tmp = findIndexOfStartAndEndTime(startTime + minTime, endTime + minTime);
+        startPoint = tmp[0];
+        endPoint = tmp[1];
+
+        // update map
+        updateMapDispatcher.call(UPDATE_MAP_STRING);
+
+    };
+
+    function findIndexOfStartAndEndTime(startTime, endTime) {
+
+        let startIdx = null,
+            endIdx = null;
+
+        for (i = 0; i < t02.length; i++) {
+            if (t02[i].time > startTime && startIdx === null) {
+                startIdx = i;
+            } else if (t02[i].time > endTime && endIdx === null) {
+                endIdx = i;
+            }
+        }
+
+        if (startIdx === null) {
+            startIdx = t02.length - 2;
+        }
+
+        if (endIdx === null) {
+            endIdx = t02.length - 1;
+        }
+
+        return [startIdx, endIdx];
+
+    }
 
     return chart;
 
