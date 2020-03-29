@@ -29,15 +29,18 @@
 
         let selectionDispatcher = d3.dispatch(SELECTION_STRING);
 
+        let groups = createGroups(t02, t15);
+
         let map = mapplot().selectionDispatcher(selectionDispatcher).mapStrokeWeight(3)("#map", "div#map-slider", t02, pathSegments);
-        let l1 = linechartPlot().selectionDispatcher(selectionDispatcher).dataColor(["red"]).dataName(["groundSpeed"]).dataLegend(["gndS [km/h]"])("#line-chart-1", t02);
-        let lBig = linechartPlot().selectionDispatcher(selectionDispatcher).dataColor(["blue", "red"]).dataName(["airSpeed", "altitude"]).dataLegend(["AirS [km/h]", "Alt [m]"])("#line-chart-big", t02);
-        let l2 = linechartPlot().selectionDispatcher(selectionDispatcher).dataColor(["red"]).dataName(["airSpeed"]).dataLegend(["AirS [km/h]"])("#line-chart-2", t02);
-        let l3 = linechartPlot().selectionDispatcher(selectionDispatcher).dataColor(["red", "blue", "green"]).dataName(["phi", "theta", "psi"]).dataLegend(["phi [deg]", "theta [deg]", "psi [deg]"])("#line-chart-3", t02);
-        let l4 = linechartPlot().selectionDispatcher(selectionDispatcher).dataColor(["red", "blue", "green"]).dataName(["accX", "accY", "accZ"]).dataLegend(["aX [mps]", "aY [mps]", "aZ [mps]"])("#line-chart-4", t02);
-        let l5 = linechartPlot().selectionDispatcher(selectionDispatcher).dataColor(["red", "blue", "green"]).dataName(["P", "Q", "R"]).dataLegend(["p [rps]", "q [rps]", "r [rps]"])("#line-chart-5", t02);
-        let l6 = linechartPlot().selectionDispatcher(selectionDispatcher).dataColor(["red"]).dataName(["groundSpeed"]).dataLegend(["gndS [km/h]"])("#line-chart-6", t02);
-        let l7 = linechartPlot().selectionDispatcher(selectionDispatcher).dataColor(["red"]).dataName(["windSpeed"]).dataLegend(["windS [km/h]"])("#line-chart-7", t02);
+
+        let lBig = linechartPlot().selectionDispatcher(selectionDispatcher)("#line-chart-big", groups[0]);
+        let l1 = linechartPlot().selectionDispatcher(selectionDispatcher)("#line-chart-1", groups[1]);
+        let l2 = linechartPlot().selectionDispatcher(selectionDispatcher)("#line-chart-2", groups[2]);
+        let l3 = linechartPlot().selectionDispatcher(selectionDispatcher)("#line-chart-3", groups[3]);
+        let l4 = linechartPlot().selectionDispatcher(selectionDispatcher)("#line-chart-4", groups[4]);
+        let l5 = linechartPlot().selectionDispatcher(selectionDispatcher)("#line-chart-5", groups[5]);
+        let l6 = linechartPlot().selectionDispatcher(selectionDispatcher)("#line-chart-6", groups[6]);
+        let l7 = linechartPlot().selectionDispatcher(selectionDispatcher)("#line-chart-7", groups[7]);
 
         selectionDispatcher.on(SELECTION_STRING + ".map", map.updateSelection);
         selectionDispatcher.on(SELECTION_STRING + ".l1", l1.updateSelection);

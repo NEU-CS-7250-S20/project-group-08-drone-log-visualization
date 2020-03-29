@@ -6,11 +6,25 @@ function linechartPlot() {
     let dataColor = "red";
     let dataName="altitude";
     let dataLegend = "Altitude [m]";
+    let dataSource = null;
 
     let data2draw, minTime, maxTime, selectionDispatcher;
     let brushingDispatcher = d3.dispatch(BRUSHING_STRING);
 
-    function chart(selector, data) {
+    function chart(selector, group) {
+
+        let colorMap = d3.scaleOrdinal(d3.schemeSet1);
+
+        let dataLen = group.keys.length;
+        dataLegend = group.legends;
+        dataName = group.keys;
+        dataSource = group.source;
+
+        dataColor = [];
+
+        for (i = 0; i < dataLen; i++) {
+            dataColor.push(colorMap(i));
+        }
 
         height = d3.select(selector).node().getBoundingClientRect().height;
         width = d3.select(selector).node().getBoundingClientRect().width;
@@ -29,10 +43,8 @@ function linechartPlot() {
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        let t02 = data;
         let timeStep = [];
 
-        let dataLen = dataName.length;
 
         data2draw = new Array(dataLen);
         let minData = new Array(dataLen);
@@ -45,10 +57,10 @@ function linechartPlot() {
         // Get data to draw from log
         for (name_index = 0; name_index < dataLen; name_index++)
         {
-            for (i = 0; i < t02.length; i++) 
+            for (i = 0; i < dataSource.length; i++)
             {
-                data2draw[name_index].push(t02[i][dataName[name_index]]);
-                timeStep.push(t02[i].time);
+                data2draw[name_index].push(dataSource[i][dataName[name_index]]);
+                timeStep.push(dataSource[i].time);
             }
 
             minData[name_index] = d3.min(data2draw[name_index]);
@@ -113,7 +125,7 @@ function linechartPlot() {
         // Add lines
         for (i = 0; i < dataLen; i++) {
             line[i].append("path")
-                .datum(t02)
+                .datum(dataSource)
                 .attr("class", "line")
                 .attr("fill", "none")
                 .attr("stroke", dataColor[i])
@@ -172,6 +184,25 @@ function linechartPlot() {
             updateChart(d);
         });
 
+        // add dropdown
+        // http://bl.ocks.org/williaster/10ef968ccfdc71c30ef8?fbclid=IwAR0_lHlF2CTFXSeZluFu9OHC1qGud08Is1XWyVN58bNI6-xr0nrGL_F38OM
+        /*
+        let dropdown = d3.select(selector)
+            .insert("select", "svg")
+            .attr("width", 200)
+            .attr("height", 200)
+            .attr("style", "display: block;");
+
+        dropdown.selectAll("option")
+            .data(["aa", "bb", "cc"])
+            .enter().append("option")
+            .attr("value", function (d) { return d; })
+            .text(function (d) {
+                return d;
+            });
+    
+
+         */
         function updateChart(d) {
 
             // Get selected boundaries

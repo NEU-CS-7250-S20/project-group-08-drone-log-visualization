@@ -389,3 +389,58 @@ function parseT16(d) {
         fpItemId: parseInt(d.fpItemId)
     }
 }
+
+function createGroups(t02, t15) {
+
+    return [
+        {
+            keys: ["groundSpeed"],
+            name: "Ground Speed",
+            legends: ["gndS [km/h]"],
+            source: t02
+        },
+        {
+            keys: ["airSpeed"],
+            name: "Air Speed",
+            legends: ["airS [km/h]"],
+            source: t02
+        },
+        {
+            keys: ["windSpeed"],
+            name: "Wind Speed",
+            legends: ["windS [km/h]"],
+            source: t02
+        },
+        {
+            keys: ["altitude"],
+            name: "Altitude",
+            legends: ["alt [m]"],
+            source: t02
+        },
+        {
+            keys: ["phi", "theta", "psi"],
+            name: "Angles",
+            legends: ["phi [deg]", "theta [deg]", "psi [deg]"],
+            source: t02
+        },
+        {
+            keys: ["accX", "accY", "accZ"],
+            name: "Accelerations",
+            legends: ["aX [mps]", "aY [mps]", "aZ [mps]"],
+            source: t02
+        },
+        {
+            keys: ["P", "Q", "R"],
+            name: "Angular Velocities",
+            legends: ["p [rps]", "q [rps]", "r [rps]"],
+            source: t02
+        },
+        {
+            keys: ["uUpper", "iUpper"],
+            name: "Battery Voltage and Current",
+            legends: ["u [mV]", "i [mA]"],
+            source: t15
+        }
+    ];
+
+}
