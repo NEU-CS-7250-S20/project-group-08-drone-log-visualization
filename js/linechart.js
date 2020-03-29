@@ -11,7 +11,7 @@ function linechartPlot() {
     let data2draw, minTime, maxTime, selectionDispatcher;
     let brushingDispatcher = d3.dispatch(BRUSHING_STRING);
 
-    function chart(selector, group) {
+    function chart(selector, group, groups) {
 
         let colorMap = d3.scaleOrdinal(d3.schemeSet1);
 
@@ -26,7 +26,7 @@ function linechartPlot() {
             dataColor.push(colorMap(i));
         }
 
-        height = d3.select(selector).node().getBoundingClientRect().height;
+        height = d3.select(selector).node().getBoundingClientRect().height - 50;
         width = d3.select(selector).node().getBoundingClientRect().width;
 
         // set the dimensions and margins of the graph
@@ -186,23 +186,40 @@ function linechartPlot() {
 
         // add dropdown
         // http://bl.ocks.org/williaster/10ef968ccfdc71c30ef8?fbclid=IwAR0_lHlF2CTFXSeZluFu9OHC1qGud08Is1XWyVN58bNI6-xr0nrGL_F38OM
-        /*
         let dropdown = d3.select(selector)
             .insert("select", "svg")
-            .attr("width", 200)
-            .attr("height", 200)
-            .attr("style", "display: block;");
+            .attr("style", "display: block;")
+            .on("change", function() {
+
+                let group = null;
+                let name = d3.select(this).property("value");
+
+                for (i = 0; i < groups.length; i++) {
+                    if (groups[i].name === name) {
+                        group = groups[i];
+                    }
+                }
+
+                let dispatchString = Object.getOwnPropertyNames(selectionDispatcher._)[1];
+                selectionDispatcher.call(dispatchString, this, group);
+
+            });
 
         dropdown.selectAll("option")
-            .data(["aa", "bb", "cc"])
+            .data(groups)
             .enter().append("option")
-            .attr("value", function (d) { return d; })
+            .attr("value", function(d) { return d.name; })
+            .attr("selected", function(d) {
+                if (d.name === group.name) {
+                    return "";
+                } else {
+                    return null;
+                }
+            })
             .text(function (d) {
-                return d;
+                return d.name;
             });
-    
 
-         */
         function updateChart(d) {
 
             // Get selected boundaries
@@ -235,7 +252,7 @@ function linechartPlot() {
 
         // If user double-clicks, reinitialize the chart
         svg.on("dblclick",function(){
-            xScale.domain(d3.extent(data, function(d) { return d.time - minTime; }))
+            xScale.domain(d3.extent(dataSource, function(d) { return d.time - minTime; }))
             xAxis.transition().call(d3.axisBottom(xScale))
             for (i = 0; i < dataLen; i++) {
                 line[i]

@@ -2,6 +2,7 @@
 
     const DELIMITED = ";";
     const SELECTION_STRING = "selection";
+    const CHANGE_STRING = "change";
 
     // load telemetry data
     Promise.all([
@@ -27,31 +28,60 @@
 
         let pathSegments = errorsIntoPathSegments(linkErrors, gpsErrors, sensorErrors, t02);
 
-        let selectionDispatcher = d3.dispatch(SELECTION_STRING);
+        let mapDispatcher = d3.dispatch(SELECTION_STRING);
+        let linechartDispatchers = [];
+        for (i = 0; i < 8; i++) {
+            linechartDispatchers.push(d3.dispatch(SELECTION_STRING, CHANGE_STRING));
+        }
 
         let groups = createGroups(t02, t15);
 
-        let map = mapplot().selectionDispatcher(selectionDispatcher).mapStrokeWeight(3)("#map", "div#map-slider", t02, pathSegments);
+        let map = mapplot().selectionDispatcher(mapDispatcher).mapStrokeWeight(3)("#map", "div#map-slider", t02, pathSegments);
 
-        let lBig = linechartPlot().selectionDispatcher(selectionDispatcher)("#line-chart-big", groups[0]);
-        let l1 = linechartPlot().selectionDispatcher(selectionDispatcher)("#line-chart-1", groups[1]);
-        let l2 = linechartPlot().selectionDispatcher(selectionDispatcher)("#line-chart-2", groups[2]);
-        let l3 = linechartPlot().selectionDispatcher(selectionDispatcher)("#line-chart-3", groups[3]);
-        let l4 = linechartPlot().selectionDispatcher(selectionDispatcher)("#line-chart-4", groups[4]);
-        let l5 = linechartPlot().selectionDispatcher(selectionDispatcher)("#line-chart-5", groups[5]);
-        let l6 = linechartPlot().selectionDispatcher(selectionDispatcher)("#line-chart-6", groups[6]);
-        let l7 = linechartPlot().selectionDispatcher(selectionDispatcher)("#line-chart-7", groups[7]);
+        let lBig = linechartPlot().selectionDispatcher(linechartDispatchers[0])("#line-chart-big", groups[0], groups);
+        let l1 = linechartPlot().selectionDispatcher(linechartDispatchers[1])("#line-chart-1", groups[1], groups);
+        let l2 = linechartPlot().selectionDispatcher(linechartDispatchers[2])("#line-chart-2", groups[2], groups);
+        let l3 = linechartPlot().selectionDispatcher(linechartDispatchers[3])("#line-chart-3", groups[3], groups);
+        let l4 = linechartPlot().selectionDispatcher(linechartDispatchers[4])("#line-chart-4", groups[4], groups);
+        let l5 = linechartPlot().selectionDispatcher(linechartDispatchers[5])("#line-chart-5", groups[5], groups);
+        let l6 = linechartPlot().selectionDispatcher(linechartDispatchers[6])("#line-chart-6", groups[6], groups);
+        let l7 = linechartPlot().selectionDispatcher(linechartDispatchers[7])("#line-chart-7", groups[7], groups);
 
-        selectionDispatcher.on(SELECTION_STRING + ".map", map.updateSelection);
-        selectionDispatcher.on(SELECTION_STRING + ".l1", l1.updateSelection);
-        selectionDispatcher.on(SELECTION_STRING + ".l2", l2.updateSelection);
-        selectionDispatcher.on(SELECTION_STRING + ".l3", l3.updateSelection);
-        selectionDispatcher.on(SELECTION_STRING + ".l4", l4.updateSelection);
-        selectionDispatcher.on(SELECTION_STRING + ".l5", l5.updateSelection);
-        selectionDispatcher.on(SELECTION_STRING + ".l6", l6.updateSelection);
-        selectionDispatcher.on(SELECTION_STRING + ".l7", l7.updateSelection);
-        selectionDispatcher.on(SELECTION_STRING + ".lBig", lBig.updateSelection);
+        console.log(l1.selectionDispatcher());
 
+        let linecharts = [lBig, l1, l2, l3, l4, l5, l6, l7];
+
+        mapDispatcher.on(SELECTION_STRING + ".map", map.updateSelection);
+        for (i = 0; i < 8; i++) {
+            mapDispatcher.on(SELECTION_STRING + ".l" + i, linecharts[i].updateSelection);
+            linechartDispatchers[i].on(SELECTION_STRING + ".map", map.updateSelection);
+
+            for (j = 0; j < 8; j++) {
+                linechartDispatchers[i].on(SELECTION_STRING + ".l" + j, linecharts[j].updateSelection);
+            }
+        }
+
+        function setOnChange(i) {
+            linechartDispatchers[i].on(CHANGE_STRING, function(group) {
+
+                let name;
+
+                if (i === 0) {
+                    name = "#line-chart-big";
+                } else {
+                    name = "#line-chart-" + i;
+                }
+
+                d3.select(name).selectAll("*").remove();
+                linecharts[i] = linechartPlot().selectionDispatcher(linechartDispatchers[i])(name, group, groups);
+
+            });
+        }
+
+        for (i = 0; i < 8; i++) {
+            // https://stackoverflow.com/questions/14422198/how-do-i-remove-all-children-elements-from-a-node-and-then-apply-them-again-with
+            setOnChange(i);
+        }
 
     });
 
