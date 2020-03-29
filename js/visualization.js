@@ -75,6 +75,12 @@
                 d3.select(name).selectAll("*").remove();
                 linecharts[i] = linechartPlot().selectionDispatcher(linechartDispatchers[i])(name, group, groups);
 
+                mapDispatcher.on(SELECTION_STRING + ".l" + i, linecharts[i].updateSelection);
+
+                for (j = 0; j < 8; j++) {
+                    linechartDispatchers[j].on(SELECTION_STRING + ".l" + i, linecharts[i].updateSelection);
+                }
+
             });
         }
 
