@@ -45,26 +45,10 @@
 
         // create plots
         let map = mapplot().selectionDispatcher(mapDispatcher).mapStrokeWeight(3)("#map", "div#map-slider", t02, pathSegments);
-
-<<<<<<< HEAD
-        let lBig = linechartPlot().selectionDispatcher(linechartDispatchers[0])("#line-chart-big", groups[0], groups);
-        let l1 = linechartPlot().selectionDispatcher(linechartDispatchers[1])("#line-chart-1", groups[1], groups);
-        let l2 = linechartPlot().selectionDispatcher(linechartDispatchers[2])("#line-chart-2", groups[2], groups);
-        let l3 = linechartPlot().selectionDispatcher(linechartDispatchers[3])("#line-chart-3", groups[3], groups);
-        let l4 = linechartPlot().selectionDispatcher(linechartDispatchers[4])("#line-chart-4", groups[4], groups);
-        let l5 = linechartPlot().selectionDispatcher(linechartDispatchers[5])("#line-chart-5", groups[5], groups);
-        let l6 = linechartPlot().selectionDispatcher(linechartDispatchers[6])("#line-chart-6", groups[6], groups);
-        let l7 = linechartPlot().selectionDispatcher(linechartDispatchers[7])("#line-chart-7", groups[7], groups);
         let log_console = consoleDisplay()("#console", log);
 
-        selectionDispatcher.on(SELECTION_STRING + ".log_console", log_console.updateSelection)
-
-        console.log(l1.selectionDispatcher());
-=======
         let linecharts = [
-            linechartPlot().selectionDispatcher(linechartDispatchers[0])("#line-chart-big", groups[0], groups),
->>>>>>> 0d12572bcf3cab569497b3ddb75fa1523fbec05c
-
+            linechartPlot().selectionDispatcher(linechartDispatchers[0])("#line-chart-big", groups[0], groups)
         ];
         for (let i = 1; i < 8; i++) {
             linecharts.push(
@@ -74,9 +58,11 @@
 
         // link time range selection events
         mapDispatcher.on(SELECTION_STRING + ".map", map.updateSelection);
+        mapDispatcher.on(SELECTION_STRING + ".log_console", log_console.updateSelection);
         for (let i = 0; i < 8; i++) {
             mapDispatcher.on(SELECTION_STRING + ".l" + i, linecharts[i].updateSelection);
             linechartDispatchers[i].on(SELECTION_STRING + ".map", map.updateSelection);
+            linechartDispatchers[i].on(SELECTION_STRING + ".log_console", log_console.updateSelection);
 
             for (let j = 0; j < 8; j++) {
                 linechartDispatchers[i].on(SELECTION_STRING + ".l" + j, linecharts[j].updateSelection);
