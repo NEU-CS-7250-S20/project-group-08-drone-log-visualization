@@ -11,7 +11,7 @@ function linechartPlot() {
     let data2draw, minTime, maxTime, selectionDispatcher;
     let brushingDispatcher = d3.dispatch(BRUSHING_STRING);
 
-    function chart(selector, group, groups) {
+    function chart(selector, group, groups, index) {
 
         let colorMap = d3.scaleOrdinal(d3.schemeSet1);
 
@@ -81,6 +81,10 @@ function linechartPlot() {
 
         let timeStep = [];
 
+        d3.select(window).on("resize." + index, function() {
+            let dispatchString = Object.getOwnPropertyNames(selectionDispatcher._)[1];
+            selectionDispatcher.call(dispatchString, this, group);
+        });
 
         data2draw = new Array(dataLen);
         let minData = new Array(dataLen);
