@@ -30,7 +30,7 @@ function linechartPlot() {
         width = d3.select(selector).node().getBoundingClientRect().width;
 
         // set the dimensions and margins of the graph
-        let margin = {top: 40, right: 30, bottom: 60, left: 60},
+        let margin = {top: 20, right: 0, bottom: 20, left: 30},
         _width = width - margin.left - margin.right,
         _height = height - margin.top - margin.bottom;
 
@@ -42,6 +42,42 @@ function linechartPlot() {
             .attr("style", "")
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        // add dropdown
+        // http://bl.ocks.org/williaster/10ef968ccfdc71c30ef8?fbclid=IwAR0_lHlF2CTFXSeZluFu9OHC1qGud08Is1XWyVN58bNI6-xr0nrGL_F38OM
+        let dropdown = d3.select(selector)
+            .insert("select", "svg")
+            .attr("style", "display: block;")
+            .on("change", function() {
+
+                let group = null;
+                let name = d3.select(this).property("value");
+
+                for (i = 0; i < groups.length; i++) {
+                    if (groups[i].name === name) {
+                        group = groups[i];
+                    }
+                }
+
+                let dispatchString = Object.getOwnPropertyNames(selectionDispatcher._)[1];
+                selectionDispatcher.call(dispatchString, this, group);
+
+            });
+
+        dropdown.selectAll("option")
+            .data(groups)
+            .enter().append("option")
+            .attr("value", function(d) { return d.name; })
+            .attr("selected", function(d) {
+                if (d.name === group.name) {
+                    return "";
+                } else {
+                    return null;
+                }
+            })
+            .text(function (d) {
+                return d.name;
+            });
 
         let timeStep = [];
 
@@ -183,42 +219,6 @@ function linechartPlot() {
         brushingDispatcher.on(BRUSHING_STRING, function(d) {
             updateChart(d);
         });
-
-        // add dropdown
-        // http://bl.ocks.org/williaster/10ef968ccfdc71c30ef8?fbclid=IwAR0_lHlF2CTFXSeZluFu9OHC1qGud08Is1XWyVN58bNI6-xr0nrGL_F38OM
-        let dropdown = d3.select(selector)
-            .insert("select", "svg")
-            .attr("style", "display: block;")
-            .on("change", function() {
-
-                let group = null;
-                let name = d3.select(this).property("value");
-
-                for (i = 0; i < groups.length; i++) {
-                    if (groups[i].name === name) {
-                        group = groups[i];
-                    }
-                }
-
-                let dispatchString = Object.getOwnPropertyNames(selectionDispatcher._)[1];
-                selectionDispatcher.call(dispatchString, this, group);
-
-            });
-
-        dropdown.selectAll("option")
-            .data(groups)
-            .enter().append("option")
-            .attr("value", function(d) { return d.name; })
-            .attr("selected", function(d) {
-                if (d.name === group.name) {
-                    return "";
-                } else {
-                    return null;
-                }
-            })
-            .text(function (d) {
-                return d.name;
-            });
 
         function updateChart(d) {
 

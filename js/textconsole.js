@@ -12,7 +12,7 @@ function consoleDisplay() {
         width = d3.select(selector).node().getBoundingClientRect().width;
 
         // set the dimensions and margins of the graph
-        let margin = {top: 40, right: 30, bottom: 60, left: 60},
+        let margin = {top: 5, right: 5, bottom: 5, left: 5},
         _width = width - margin.left - margin.right,
         _height = height - margin.top - margin.bottom;
 

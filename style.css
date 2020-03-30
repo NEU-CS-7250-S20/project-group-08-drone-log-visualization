@@ -30,6 +30,10 @@ h1, h2, h3 {
 	grid-template-rows: 1fr 1fr 1fr 1fr;
 }
 
+.vis-holder-cell {
+	margin: 10px 10px 10px 10px;
+}
+
 #map {
 	grid-column-start: 1;
   	grid-column-end: 3;
