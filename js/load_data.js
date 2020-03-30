@@ -356,8 +356,8 @@ function parseT15(d) {
     // parse a single line of telemetry 15
     return {
         time: parseFloatWithCommaDecimal(d.time),
-        uUpper: parseInt(d.uUpper),
-        iUpper: parseInt(d.iUpper),
+        uUpper: parseInt(d.uUpper) / 1000.0,
+        iUpper: parseInt(d.iUpper) / 1000.0,
         gpsErr: parseInt(d.gpsErr),
         sensorErr: parseInt(d.sensorErr),
         uLower: parseInt(d.uLower),
@@ -438,7 +438,7 @@ function createGroups(t02, t15) {
         {
             keys: ["uUpper", "iUpper"],
             name: "Battery Voltage and Current",
-            legends: ["u [mV]", "i [mA]"],
+            legends: ["u [V]", "i [A]"],
             source: t15
         }
     ];
