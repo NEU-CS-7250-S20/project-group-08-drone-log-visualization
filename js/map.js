@@ -77,12 +77,12 @@ function mapplot() {
 
         // setup slider
         slider = d3.sliderBottom()
-            .min(0)
-            .max(timeLength)
+            .min(minTime)
+            .max(maxTime)
             .width(800) // TODO: should be relative
             //.tickFormat(d3.format('.2'))
             .ticks(10)
-            .default([0.0, timeLength])
+            .default([minTime, maxTime])
             .fill("#2196f3")
             .on('onchange', function(val) {
 
@@ -168,7 +168,7 @@ function mapplot() {
                         endPoint = t02.length - 1;
 
                     // set slider value, which triggers map update
-                    slider.value([t02[startPoint].time - minTime, t02[endPoint].time - minTime]);
+                    slider.value([t02[startPoint].time, t02[endPoint].time]);
 
                 });
 
@@ -402,7 +402,7 @@ function mapplot() {
 
         slider.silentValue([startTime, endTime]);
 
-        let tmp = findIndexOfStartAndEndTime(startTime + minTime, endTime + minTime);
+        let tmp = findIndexOfStartAndEndTime(startTime, endTime);
         startPoint = tmp[0];
         endPoint = tmp[1];
 
