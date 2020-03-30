@@ -13,8 +13,10 @@ function linechartPlot() {
 
     function chart(selector, group, groups, index) {
 
+        // get a categorical color scheme
         let colorMap = d3.scaleOrdinal(d3.schemeSet1);
 
+        // get information about what we're plotting
         let dataLen = group.keys.length;
         dataLegend = group.legends;
         dataName = group.keys;
@@ -26,6 +28,7 @@ function linechartPlot() {
             dataColor.push(colorMap(i));
         }
 
+        // get the size of the container
         height = d3.select(selector).node().getBoundingClientRect().height - 50;
         width = d3.select(selector).node().getBoundingClientRect().width;
 
@@ -43,8 +46,7 @@ function linechartPlot() {
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        // add dropdown
-        // http://bl.ocks.org/williaster/10ef968ccfdc71c30ef8?fbclid=IwAR0_lHlF2CTFXSeZluFu9OHC1qGud08Is1XWyVN58bNI6-xr0nrGL_F38OM
+        // add dropdown menu for selecting which attribute to display
         let dropdown = d3.select(selector)
             .insert("select", "svg")
             .attr("style", "display: block;")
@@ -79,12 +81,14 @@ function linechartPlot() {
                 return d.name;
             });
 
-        let timeStep = [];
-
+        // resize figure on window resize event
         d3.select(window).on("resize." + index, function() {
             let dispatchString = Object.getOwnPropertyNames(selectionDispatcher._)[1];
             selectionDispatcher.call(dispatchString, this, group);
         });
+
+        // draw figure
+        let timeStep = [];
 
         data2draw = new Array(dataLen);
         let minData = new Array(dataLen);
