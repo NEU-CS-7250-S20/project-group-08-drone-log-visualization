@@ -46,6 +46,9 @@
         let l5 = linechartPlot().selectionDispatcher(linechartDispatchers[5])("#line-chart-5", groups[5], groups);
         let l6 = linechartPlot().selectionDispatcher(linechartDispatchers[6])("#line-chart-6", groups[6], groups);
         let l7 = linechartPlot().selectionDispatcher(linechartDispatchers[7])("#line-chart-7", groups[7], groups);
+        let log_console = consoleDisplay()("#console", log);
+
+        selectionDispatcher.on(SELECTION_STRING + ".log_console", log_console.updateSelection)
 
         console.log(l1.selectionDispatcher());
 

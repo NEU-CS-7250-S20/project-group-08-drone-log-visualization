@@ -195,3 +195,16 @@ html, body, #map {
 	fill: none;
 	pointer-events: all;
 }
+
+/* Console style */
+.log-console{
+	height: 220px;
+	width: 480px;
+	overflow: auto;
+	background-color: black;
+	color: green;
+	scrollbar-base-color:gold;
+	font-family:sans-serif;
+	padding:10px;
+	font-size:1rem;
+}

@@ -75,7 +75,7 @@ function linechartPlot() {
 
         // Set proper range for x axis
         let xScale = d3.scaleLinear()
-            .domain([0, maxTime - minTime])
+            .domain([minTime, maxTime])
             .range([0, _width]);
 
         let xAxis = svg.append("g")
@@ -107,7 +107,7 @@ function linechartPlot() {
                 if (d3.event.selection !== null) {
                     timeExtent = brushEventToTime(d3.event.selection);
                 } else {
-                    timeExtent = [0, maxTime - minTime];
+                    timeExtent = [minTime, maxTime];
                 }
 
                 let dispatchString = Object.getOwnPropertyNames(selectionDispatcher._)[0];
@@ -131,7 +131,7 @@ function linechartPlot() {
                 .attr("stroke", dataColor[i])
                 .attr("stroke-width", 2)
                 .attr("d", d3.line()
-                .x(function(d) { return xScale(d.time - minTime) })
+                .x(function(d) { return xScale(d.time) })
                 .y(function(d) { return yScale(d[dataName[i]]) })
             );          
 
@@ -244,7 +244,7 @@ function linechartPlot() {
                     //.transition()
                     //.duration(1000)
                     .attr("d", d3.line()
-                    .x(function(d) { return xScale(d.time - minTime) })
+                    .x(function(d) { return xScale(d.time) })
                     .y(function(d) { return yScale(d[dataName[i]]) })
                 ); 
             }
@@ -252,14 +252,14 @@ function linechartPlot() {
 
         // If user double-clicks, reinitialize the chart
         svg.on("dblclick",function(){
-            xScale.domain(d3.extent(dataSource, function(d) { return d.time - minTime; }))
+            xScale.domain(d3.extent(dataSource, function(d) { return d.time; }))
             xAxis.transition().call(d3.axisBottom(xScale))
             for (i = 0; i < dataLen; i++) {
                 line[i]
                     .select('.line')
                     .transition()
                     .attr("d", d3.line()
-                    .x(function(d) { return xScale(d.time - minTime) })
+                    .x(function(d) { return xScale(d.time) })
                     .y(function(d) { return yScale(d[dataName[i]]) })
                 );  
             }
@@ -308,7 +308,6 @@ function linechartPlot() {
 
         if (!arguments.length) return;
 
-        console.log(selectedData);
         brushingDispatcher.call(BRUSHING_STRING, this, selectedData);
 
     };
