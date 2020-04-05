@@ -150,7 +150,7 @@ function linechartPlot() {
                 // prevent infinite recursion
                 // (selection triggers update, which clears the selection, which triggers an update, ...)
                 // https://stackoverflow.com/questions/45035506/how-to-prevent-d3-brush-events-from-firing-after-calling-brush-move
-                if (d3.event.sourceEvent.type !== "mouseup") return;
+                if (d3.event.sourceEvent === null || d3.event.sourceEvent.type !== "mouseup") return;
 
                 let timeExtent = null;
                 if (d3.event.selection !== null) {
