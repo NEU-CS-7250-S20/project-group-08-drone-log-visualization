@@ -147,6 +147,11 @@ function linechartPlot() {
         let brush = d3.brushX()
             .extent( [ [0,0], [_width,_height] ] )
             .on("end", function() {
+                // prevent infinite recursion
+                // (selection triggers update, which clears the selection, which triggers an update, ...)
+                // https://stackoverflow.com/questions/45035506/how-to-prevent-d3-brush-events-from-firing-after-calling-brush-move
+                if (d3.event.sourceEvent.type !== "mouseup") return;
+
                 let timeExtent = null;
                 if (d3.event.selection !== null) {
                     timeExtent = brushEventToTime(d3.event.selection);
@@ -160,6 +165,8 @@ function linechartPlot() {
 
 
         let line = new Array(dataLen);
+        let lineBrush = new Array(dataLen);
+
         for (i = 0; i < dataLen; i++)
         {
             line[i] = svg.append('g')
@@ -182,7 +189,7 @@ function linechartPlot() {
         }
 
         for (i = 0; i < dataLen; i++) {
-            line[i].append("g")
+            lineBrush[i] = line[i].append("g")
                 .attr("class", "brush")
                 .call(brush);
 
@@ -229,6 +236,11 @@ function linechartPlot() {
         });
 
         function updateChart(d) {
+
+            // clear selection
+            for (let i = 0; i < lineBrush.length; i++) {
+                brush.move(lineBrush[i], null);
+            }
 
             // Get selected boundaries
             extent = d;
