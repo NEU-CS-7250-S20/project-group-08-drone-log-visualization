@@ -221,6 +221,8 @@ function linechartPlot() {
             .call(make_x_gridlines()
                 .tickSize(-_height)
                 .tickFormat(""));
+
+        svg.append("text").attr("x", _width - 30).attr("y", _height - 5).text("[s]").style("font-size", "15px").attr("alignment-baseline","middle");
                 
         for (i = 1; i <= dataLen; i++) {
             svg.append("circle").attr("cx",_width / (dataLen + 1) * i).attr("cy", -10).attr("r", 6).style("fill", dataColor[i - 1]);
