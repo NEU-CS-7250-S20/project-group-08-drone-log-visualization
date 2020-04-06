@@ -205,8 +205,8 @@ html, body, #map {
 	/*height: 220px;
 	width: 480px;*/
 	overflow: auto;
-	background-color: black;
-	color: green;
+	background-color: white;
+	color: black;
 	/*scrollbar-base-color: gold;*/
 	font-family:sans-serif;
 	padding:10px;

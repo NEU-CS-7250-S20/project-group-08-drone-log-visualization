@@ -36,6 +36,7 @@ function consoleDisplay() {
         let div = frObject
                     .append('xhtml:div')
                     .attr("class", "log-console")
+                    .attr("style", "border-left: 1px solid; border-right: 1px solid")
                     .html("");
 
         let text2display = "";
@@ -45,7 +46,7 @@ function consoleDisplay() {
             text2display += data[i].time + " " + data[i].message + "<br>";            
         }
 
-        div.html(text2display);
+        div.html("<strong><center>Console</center></strong>" + text2display);
 
         // Update the text given boundaries
         brushingDispatcher.on(BRUSHING_STRING, function(d) {
@@ -68,7 +69,7 @@ function consoleDisplay() {
                 text2display += data[i].time + data[i].message + "<br>";            
             }
 
-            div.html(text2display);
+            div.html("<strong><center>Console</center></strong>" + text2display);
 
         }
 
