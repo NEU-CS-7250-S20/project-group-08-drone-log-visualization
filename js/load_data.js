@@ -436,11 +436,17 @@ function createGroups(t02, t15) {
             source: t02
         },
         {
-            keys: ["uUpper", "iUpper"],
-            name: "Battery Voltage and Current",
-            legends: ["u [V]", "i [A]"],
+            keys: ["uUpper"],
+            name: "Battery Voltage",
+            legends: ["u [V]"],
             source: t15
-        }
+        },
+        {
+            keys: ["iUpper"],
+            name: "Battery Current",
+            legends: ["i [A]"],
+            source: t15
+        }        
     ];
 
 }
