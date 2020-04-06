@@ -53,6 +53,7 @@ function mapplot() {
 
         let map = new google.maps.Map(d3.select(mapSelector).node(), {
             zoom: 15,
+            streetViewControl: false,
             center: new google.maps.LatLng(avgLat, avgLon),
             mapTypeId: google.maps.MapTypeId.HYBRID
         });
