@@ -18,10 +18,13 @@ function consoleDisplay() {
 
         // append the svg object to the body of the page
         let svg = d3.select(selector)
-            .append("svg")
-            .attr("width", _width + margin.left + margin.right)
-            .attr("height", _height + margin.top + margin.bottom)
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            //.append("svg")
+            .attr("style", "width: " + _width + "px; height: " + _height + "px;")
+            .attr("style", "margin: " + margin.top + "px " + margin.right + "px " + margin.bottom + "px " + margin.left + "px;")
+            .attr("class", "log-console");
+            //.attr("width", _width + margin.left + margin.right)
+            //.attr("height", _height + margin.top + margin.bottom)
+            //.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         let frObject = svg
                 .append('foreignObject')
@@ -46,7 +49,6 @@ function consoleDisplay() {
 
         // Update the text given boundaries
         brushingDispatcher.on(BRUSHING_STRING, function(d) {
-            console.log("brushing")
             updateText(d);
         });
 
@@ -55,11 +57,11 @@ function consoleDisplay() {
             // Get selected boundaries
             extent = d;
 
-            indices = findIndexOfStartAndEndTime(extent[0], extent[1])
-            startStep = indices[0]
-            currentStep = indices[1]
+            indices = findIndexOfStartAndEndTime(extent[0], extent[1]);
+            startStep = indices[0];
+            currentStep = indices[1];
 
-            text2display = ""
+            text2display = "";
 
             for (i = startStep; i < currentStep; i++)
             {

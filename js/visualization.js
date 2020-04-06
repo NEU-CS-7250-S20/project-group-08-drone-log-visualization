@@ -45,7 +45,7 @@
 
         // create plots
         let map = mapplot().selectionDispatcher(mapDispatcher).mapStrokeWeight(3)("#map", "div#map-slider", t02, pathSegments);
-        let log_console = consoleDisplay()("#console", log);
+        let logConsole = consoleDisplay()("#console", log);
 
         let linecharts = [
             linechartPlot().selectionDispatcher(linechartDispatchers[0])("#line-chart-big", groups[0], groups, 0)
@@ -58,11 +58,11 @@
 
         // link time range selection events
         mapDispatcher.on(SELECTION_STRING + ".map", map.updateSelection);
-        mapDispatcher.on(SELECTION_STRING + ".log_console", log_console.updateSelection);
+        mapDispatcher.on(SELECTION_STRING + ".logConsole", logConsole.updateSelection);
         for (let i = 0; i < 8; i++) {
             mapDispatcher.on(SELECTION_STRING + ".l" + i, linecharts[i].updateSelection);
             linechartDispatchers[i].on(SELECTION_STRING + ".map", map.updateSelection);
-            linechartDispatchers[i].on(SELECTION_STRING + ".log_console", log_console.updateSelection);
+            linechartDispatchers[i].on(SELECTION_STRING + ".logConsole", logConsole.updateSelection);
 
             for (let j = 0; j < 8; j++) {
                 linechartDispatchers[i].on(SELECTION_STRING + ".l" + j, linecharts[j].updateSelection);
@@ -70,7 +70,7 @@
         }
 
         // link change attribute events
-        function setOnChange(i) {
+        function setOnLinechartChange(i) {
             linechartDispatchers[i].on(CHANGE_STRING, function(group) {
 
                 let name;
@@ -95,7 +95,7 @@
         }
 
         for (let i = 0; i < 8; i++) {
-            setOnChange(i);
+            setOnLinechartChange(i);
         }
 
     });

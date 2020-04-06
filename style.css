@@ -202,8 +202,8 @@ html, body, #map {
 
 /* Console style */
 .log-console{
-	height: 220px;
-	width: 480px;
+	/*height: 220px;
+	width: 480px;*/
 	overflow: auto;
 	background-color: black;
 	color: green;
