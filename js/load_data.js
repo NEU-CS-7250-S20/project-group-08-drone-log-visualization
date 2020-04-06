@@ -401,7 +401,7 @@ function createGroups(t02, t15) {
         },
         {
             keys: ["airSpeed"],
-            name: "Air Speed",
+            name: "Airspeed",
             legends: ["airS [km/h]"],
             source: t02
         },
@@ -426,25 +426,25 @@ function createGroups(t02, t15) {
         {
             keys: ["accX", "accY", "accZ"],
             name: "Accelerations",
-            legends: ["aX [mps]", "aY [mps]", "aZ [mps]"],
+            legends: ["aX [m/s]", "aY [m/s]", "aZ [m/s]"],
             source: t02
         },
         {
             keys: ["P", "Q", "R"],
             name: "Angular Velocities",
-            legends: ["p [rps]", "q [rps]", "r [rps]"],
+            legends: ["p [rad/s]", "q [rad/s]", "r [rad/s]"],
             source: t02
         },
         {
             keys: ["uUpper"],
             name: "Battery Voltage",
-            legends: ["u [V]"],
+            legends: ["uUpper [V]"],
             source: t15
         },
         {
             keys: ["iUpper"],
             name: "Battery Current",
-            legends: ["i [A]"],
+            legends: ["iUpper [A]"],
             source: t15
         }        
     ];

@@ -4,6 +4,8 @@ function consoleDisplay() {
 
     const BRUSHING_STRING = "brushing";
 
+    const console_header = "<strong><center>System Messages</center></strong>"
+
     let brushingDispatcher = d3.dispatch(BRUSHING_STRING);
 
     function chart(selector, data) {
@@ -12,7 +14,7 @@ function consoleDisplay() {
         width = d3.select(selector).node().getBoundingClientRect().width;
 
         // set the dimensions and margins of the graph
-        let margin = {top: 5, right: 5, bottom: 5, left: 5},
+        let margin = {top: 1, right: 5, bottom: 1, left: 5},
         _width = width - margin.left - margin.right,
         _height = height - margin.top - margin.bottom;
 
@@ -46,7 +48,7 @@ function consoleDisplay() {
             text2display += data[i].time + " " + data[i].message + "<br>";            
         }
 
-        div.html("<strong><center>Console</center></strong>" + text2display);
+        div.html("<p class='console-text-style'>" + "<font size='3px'; font-family='sans-serif'>" + console_header + text2display) + "</p>";
 
         // Update the text given boundaries
         brushingDispatcher.on(BRUSHING_STRING, function(d) {
@@ -69,7 +71,7 @@ function consoleDisplay() {
                 text2display += data[i].time + data[i].message + "<br>";            
             }
 
-            div.html("<strong><center>Console</center></strong>" + text2display);
+            div.html("<p class='console-text-style'>" + "<font size='3px'; font-family='sans-serif'>" + console_header + text2display) + "</p>";
 
         }
 

@@ -33,7 +33,7 @@ function linechartPlot() {
         width = d3.select(selector).node().getBoundingClientRect().width;
 
         // set the dimensions and margins of the graph
-        let margin = {top: 20, right: 0, bottom: 20, left: 30},
+        let margin = {top: 20, right: 0, bottom: 20, left: 35},
         _width = width - margin.left - margin.right,
         _height = height - margin.top - margin.bottom;
 
@@ -224,7 +224,7 @@ function linechartPlot() {
 
         svg.append("text")
             .attr("x", _width - 30)
-            .attr("y", _height - 5)
+            .attr("y", _height - 15)
             .text("t [s]")
             .style("font-size", "10px", "font-family", "sans-serif")
             .attr("alignment-baseline","middle");
