@@ -222,11 +222,20 @@ function linechartPlot() {
                 .tickSize(-_height)
                 .tickFormat(""));
 
-        svg.append("text").attr("x", _width - 30).attr("y", _height - 5).text("[s]").style("font-size", "15px").attr("alignment-baseline","middle");
+        svg.append("text")
+            .attr("x", _width - 30)
+            .attr("y", _height - 5)
+            .text("t [s]")
+            .style("font-size", "10px", "font-family", "sans-serif")
+            .attr("alignment-baseline","middle");
                 
         for (i = 1; i <= dataLen; i++) {
             svg.append("circle").attr("cx",_width / (dataLen + 1) * i).attr("cy", -10).attr("r", 6).style("fill", dataColor[i - 1]);
-            svg.append("text").attr("x", _width / (dataLen + 1) * i + 8).attr("y",-5).text(dataLegend[i-1]).style("font-size", "15px").attr("alignment-baseline","middle");
+            svg.append("text")
+                .attr("x", _width / (dataLen + 1) * i + 8)
+                .attr("y",-5).text(dataLegend[i-1])
+                .style("font-size", "10px", "font-family", "sans-serif")
+                .attr("alignment-baseline","middle");
         }
 
         let idleTimeout;
