@@ -32,7 +32,7 @@ function linechartPlot() {
         width = d3.select(selector).node().getBoundingClientRect().width;
 
         // set the dimensions and margins of the graph
-        let margin = {top: 20, right: 20, bottom: 20, left: 20},
+        let margin = {top: 20, right: 5, bottom: 20, left: 30},
         _width = width - margin.left - margin.right,
         _height = height - margin.top - margin.bottom;
 
