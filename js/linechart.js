@@ -2,7 +2,9 @@ function linechartPlot() {
 
     const BRUSHING_STRING = "brushing";
 
-    let width = 460, height = 200;
+    // width and height will be computed automatically
+    let width = null, height = null, widthMinusMargins = null, heightMinusMargins = null;
+    let margin = {top: 20, right: 5, bottom: 20, left: 30};
     let dataColor = "red";
     let dataName="altitude";
     let dataLegend = "Altitude [m]";
@@ -28,13 +30,7 @@ function linechartPlot() {
         }
 
         // get the size of the container
-        height = d3.select(selector).node().getBoundingClientRect().height - 50;
-        width = d3.select(selector).node().getBoundingClientRect().width;
-
-        // set the dimensions and margins of the graph
-        let margin = {top: 20, right: 5, bottom: 20, left: 30},
-        _width = width - margin.left - margin.right,
-        _height = height - margin.top - margin.bottom;
+        setWidthHeightAndWHMinusMargins();
 
         // append the svg object to the body of the page
         let svgBase = d3.select(selector)
@@ -82,68 +78,6 @@ function linechartPlot() {
                 return d.name;
             });
 
-        // resize figure on window resize event
-        d3.select(window).on("resize." + index, function() {
-            //let dispatchString = Object.getOwnPropertyNames(selectionDispatcher._)[1];
-            //selectionDispatcher.call(dispatchString, this, group);
-            height = d3.select(selector).node().getBoundingClientRect().height - 50;
-            width = d3.select(selector).node().getBoundingClientRect().width;
-
-            _width = width - margin.left - margin.right;
-            _height = height - margin.top - margin.bottom;
-
-            svgBase
-                .attr("width", width)
-                .attr("height", height);
-
-            xScale.range([0, _width]);
-
-            yScale.range([_height, 0]);
-
-            clip
-                .attr("width", _width )
-                .attr("height", _height );
-
-            xAxis.call(d3.axisBottom(xScale));
-            xAxis.attr("transform", "translate(0," + _height + ")");
-            yAxis.call(d3.axisLeft(yScale));
-
-            for (let i = 0; i < dataLen; i++) {
-                line[i].selectAll('.line')
-                    .attr("d", function (d) {
-                        return lineObj[i](d);
-                    });
-            }
-
-            xGridLines
-                .attr("transform", "translate(0," + _height + ")")
-                .call(
-                    make_x_gridlines()
-                        .tickSize(-_height)
-                        .tickFormat("")
-                );
-            yGridLines
-                .attr("x", _width - 30)
-                .attr("y", _height - 15)
-                .call(make_y_gridlines()
-                    .tickSize(-_width)
-                    .tickFormat("")
-                );
-
-
-            xLegend
-                .attr("x", _width - 30)
-                .attr("y", _height - 15);
-
-            for (let i = 0; i < dataLen; i++) {
-
-                yLegendCircles[i].attr("cx",_width / (dataLen + 1) * i);
-                yLegendTexts[i].attr("x", _width / (dataLen + 1) * i + 8);
-
-            }
-
-        });
-
         // draw figure
         let timeStep = [];
 
@@ -177,31 +111,32 @@ function linechartPlot() {
         // Set proper range for x axis
         let xScale = d3.scaleLinear()
             .domain([minTime, maxTime])
-            .range([0, _width]);
+            .range([0, widthMinusMargins]);
 
         let xAxis = svg.append("g")
-            .attr("transform", "translate(0," + _height + ")")
+            .attr("transform", "translate(0," + heightMinusMargins + ")")
             .call(d3.axisBottom(xScale));
 
         // Set proper range for y axis
         let yScale = d3.scaleLinear()
             .domain([minY, maxY])
-            .range([_height, 0]);
+            .range([heightMinusMargins, 0]);
 
         let yAxis = svg.append("g").call(d3.axisLeft(yScale));
 
         // add clip path
+        /*
         let clip = svg.append("defs").append("svg:clipPath")
             .attr("id", "clip")
             .append("svg:rect")
-            .attr("width", _width )
-            .attr("height", _height )
+            .attr("width", widthMinusMargins)
+            .attr("height", heightMinusMargins)
             .attr("x", 0)
             .attr("y", 0);
-
+        */
         // add brushing
         let brush = d3.brushX()
-            .extent( [ [0,0], [_width,_height] ] )
+            .extent([[0, 0], [widthMinusMargins, heightMinusMargins]])
             .on("end", function() {
                 // prevent infinite recursion
                 // (selection triggers update, which clears the selection, which triggers an update, ...)
@@ -226,7 +161,7 @@ function linechartPlot() {
 
         for (let i = 0; i < dataLen; i++)
         {
-            line[i] = svg.append('g')
+            line[i] = svg.append("g")
                 .attr("clip-path", "url(#clip)");
         }
 
@@ -248,7 +183,7 @@ function linechartPlot() {
 
         }
 
-        for (i = 0; i < dataLen; i++) {
+        for (let i = 0; i < dataLen; i++) {
             lineBrush[i] = line[i].append("g")
                 .attr("class", "brush")
                 .call(brush);
@@ -271,23 +206,23 @@ function linechartPlot() {
         let yGridLines = svg.append("g")
             .attr("class", "grid")
             .call(make_y_gridlines()
-                .tickSize(-_width)
+                .tickSize(- widthMinusMargins)
                 .tickFormat(""));
 
         // add the X gridlines
         let xGridLines = svg.append("g")
             .attr("class", "grid")
-            .attr("transform", "translate(0," + _height + ")")
+            .attr("transform", "translate(0," + heightMinusMargins + ")")
             .call(make_x_gridlines()
-                .tickSize(-_height)
+                .tickSize(- heightMinusMargins)
                 .tickFormat(""));
 
         let xLegend = svg.append("text")
-            .attr("x", _width - 30)
-            .attr("y", _height - 15)
+            .attr("x", widthMinusMargins - 30)
+            .attr("y", heightMinusMargins - 15)
             .text("t [s]")
             .style("font-size", "10px", "font-family", "sans-serif")
-            .attr("alignment-baseline","middle");
+            .attr("alignment-baseline", "middle");
 
         let yLegendCircles = [];
         let yLegendTexts = [];
@@ -295,14 +230,14 @@ function linechartPlot() {
         for (let i = 1; i <= dataLen; i++) {
             yLegendCircles.push(
                 svg.append("circle")
-                    .attr("cx",_width / (dataLen + 1) * i)
+                    .attr("cx", widthMinusMargins / (dataLen + 1) * i)
                     .attr("cy", -10)
                     .attr("r", 6)
                     .style("fill", dataColor[i - 1])
             );
             yLegendTexts.push(
                 svg.append("text")
-                    .attr("x", _width / (dataLen + 1) * i + 8)
+                    .attr("x", widthMinusMargins / (dataLen + 1) * i + 8)
                     .attr("y",-5).text(dataLegend[i-1])
                     .style("font-size", "10px", "font-family", "sans-serif")
                     .attr("alignment-baseline","middle")
@@ -343,7 +278,7 @@ function linechartPlot() {
 
             for (let i = 0; i < dataLen; i++) {
                 line[i]
-                    .select('.line')
+                    .select(".line")
                     .attr("d", d3.line()
                     .x(function(d) { return xScale(d.time) })
                     .y(function(d) { return yScale(d[dataName[i]]) })
@@ -353,11 +288,11 @@ function linechartPlot() {
 
         // If user double-clicks, reinitialize the chart
         svg.on("dblclick",function(){
-            xScale.domain(d3.extent(dataSource, function(d) { return d.time; }))
-            xAxis.transition().call(d3.axisBottom(xScale))
+            xScale.domain(d3.extent(dataSource, function(d) { return d.time; }));
+            xAxis.transition().call(d3.axisBottom(xScale));
             for (i = 0; i < dataLen; i++) {
                 line[i]
-                    .select('.line')
+                    .select(".line")
                     //.transition()
                     .attr("d", d3.line()
                     .x(function(d) { return xScale(d.time) })
@@ -367,25 +302,88 @@ function linechartPlot() {
             
         });
 
+        // resize figure on window resize event
+        d3.select(window).on("resize." + index, function() {
+            // update size
+            setWidthHeightAndWHMinusMargins();
+            // update svg size
+            svgBase
+                .attr("width", width)
+                .attr("height", height);
+
+
+
+            //clip
+            //    .attr("width", widthMinusMargins )
+            //    .attr("height", heightMinusMargins);
+
+            // update axes
+            xScale.range([0, widthMinusMargins]);
+            yScale.range([heightMinusMargins, 0]);
+
+            xAxis.call(d3.axisBottom(xScale));
+            xAxis.attr("transform", "translate(0," + heightMinusMargins + ")");
+            yAxis.call(d3.axisLeft(yScale));
+            // update brushing
+            brush.extent([[0,0], [widthMinusMargins, heightMinusMargins]]);
+
+            for (let i = 0; i < dataLen; i++) {
+                lineBrush[i]
+                    .call(brush);
+            }
+            // redraw lines
+            for (let i = 0; i < dataLen; i++) {
+                line[i].selectAll(".line")
+                    .attr("d", function (d) {
+                        return lineObj[i](d);
+                    });
+            }
+            // update grid lines
+            xGridLines
+                .attr("transform", "translate(0," + heightMinusMargins + ")")
+                .call(
+                    make_x_gridlines()
+                        .tickSize(- heightMinusMargins)
+                        .tickFormat("")
+                );
+            yGridLines
+                .attr("x", widthMinusMargins - 30)
+                .attr("y", heightMinusMargins - 15)
+                .call(make_y_gridlines()
+                    .tickSize(- widthMinusMargins)
+                    .tickFormat("")
+                );
+            // update legends
+            xLegend
+                .attr("x", widthMinusMargins - 30)
+                .attr("y", heightMinusMargins - 15);
+
+            for (let i = 0; i < dataLen; i++) {
+
+                yLegendCircles[i].attr("cx",widthMinusMargins / (dataLen + 1) * i);
+                yLegendTexts[i].attr("x", widthMinusMargins / (dataLen + 1) * i + 8);
+
+            }
+
+        });
+
         function brushEventToTime(brushEvent) {
             return [xScale.invert(brushEvent[0]), xScale.invert(brushEvent[1])];
+        }
+
+        function setWidthHeightAndWHMinusMargins() {
+            // get the size of the container
+            width = d3.select(selector).node().getBoundingClientRect().width;
+            height = d3.select(selector).node().getBoundingClientRect().height - 50;
+
+            // set the dimensions and margins of the graph
+            widthMinusMargins = width - margin.left - margin.right;
+            heightMinusMargins = height - margin.top - margin.bottom;
         }
 
         return chart;
 
     }
-
-    chart.width = function(_) {
-        if (!arguments.length) return width;
-        width = _;
-        return chart;
-    };
-
-    chart.height = function(_) {
-        if (!arguments.length) return height;
-        height = _;
-        return chart;
-    };
 
     chart.dataColor = function(_) {
         if (!arguments.length) return dataColor;
