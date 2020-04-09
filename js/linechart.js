@@ -257,6 +257,7 @@ function linechartPlot() {
 
             // If no selection, back to initial coordinate. Otherwise, update X axis domain
             if(!extent) {
+                console.log("BAD");
                 if (!idleTimeout) 
                     return idleTimeout = setTimeout(idled, 350);
             }
@@ -265,7 +266,8 @@ function linechartPlot() {
             }
 
             // Update axis and line position
-            xAxis.call(d3.axisBottom(xScale));
+            xAxis//.transition().duration(1000)
+                .call(d3.axisBottom(xScale));
 
             for (i = 0; i < dataLen; i++) {
                 line[i]
@@ -284,7 +286,7 @@ function linechartPlot() {
             for (i = 0; i < dataLen; i++) {
                 line[i]
                     .select('.line')
-                    .transition()
+                    //.transition()
                     .attr("d", d3.line()
                     .x(function(d) { return xScale(d.time) })
                     .y(function(d) { return yScale(d[dataName[i]]) })

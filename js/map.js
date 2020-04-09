@@ -1,10 +1,10 @@
 function mapplot() {
 
     const UPDATE_MAP_STRING = "updateMap";
+    const SLIDER_WIDTH_FRACTION = 0.6;
+    const SLIDER_MARGIN = 200;
 
-    let width = 1.0,
-        height = 1.0,
-        mapStrokeWeight= 2,
+    let mapStrokeWeight= 2,
         selectionDispatcher,
         slider,
         minTime,
@@ -29,17 +29,6 @@ function mapplot() {
         let avgLat = (lat.reduce((prev, cur) => cur += prev)) / lat.length;
         let avgLon = (lon.reduce((prev, cur) => cur += prev)) / lon.length;
 
-        // modify map styles
-        /*
-        d3.select(mapSelector)
-            .attr(
-                "style", "width: " + width * 100 +
-                "%; height: " + height * 100 +
-                "%; float: left; display: inline-block;"
-            );
-
-
-         */
         // setup google map
         let t02Subset = t02;
         minTime = t02[0].time;
@@ -77,10 +66,12 @@ function mapplot() {
         let endMarker = null;
 
         // setup slider
+        let width = d3.select(mapSelector).node().getBoundingClientRect().width;
+
         slider = d3.sliderBottom()
             .min(minTime)
             .max(maxTime)
-            .width(800) // TODO: should be relative
+            .width(Math.round(width * SLIDER_WIDTH_FRACTION))
             //.tickFormat(d3.format('.2'))
             .ticks(10)
             .default([minTime, maxTime])
@@ -93,16 +84,25 @@ function mapplot() {
 
             });
 
-        let sliderGroup = d3.select(sliderSelector)
+        let sliderSvg = d3.select(sliderSelector)
             .attr("style", "margin-left: 10%;")
             //.attr("hidden", null)
             .append("svg")
-            .attr("width", 1000) // TODO: should be relative
-            .attr("height", 100)
+            .attr("width", Math.round(width * SLIDER_WIDTH_FRACTION) + SLIDER_MARGIN)
+            .attr("height", 100);
+
+        let sliderGroup = sliderSvg
             .append("g")
             .attr("transform", "translate(30,30)");
 
         sliderGroup.call(slider);
+
+        d3.select(window).on("resize", function() {
+            width = d3.select(mapSelector).node().getBoundingClientRect().width;
+            slider.width(Math.round(width * SLIDER_WIDTH_FRACTION));
+            sliderSvg.attr("width", Math.round(width * SLIDER_WIDTH_FRACTION) + SLIDER_MARGIN);
+            sliderGroup.call(slider);
+        });
 
         // add slider to map
         map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(d3.select(sliderSelector).node());
@@ -362,18 +362,6 @@ function mapplot() {
         return chart;
 
     }
-
-    chart.width = function(_) {
-        if (!arguments.length) return width;
-        width = _;
-        return chart;
-    };
-
-    chart.height = function(_) {
-        if (!arguments.length) return height;
-        height = _;
-        return chart;
-    };
 
     chart.mapStrokeWeight = function(_) {
         if (!arguments.length) return mapStrokeWeight;
