@@ -71,7 +71,7 @@ function consoleDisplay() {
                 text2display += data[i].time + data[i].message + "<br>";            
             }
 
-            div.html("<p class='console-text-style'>" + "<font size='3px'; font-family='sans-serif'>" + console_header + text2display) + "</p>";
+            div.html("<p class='console-text-style'>" + "<font size='3px'; font-family='sans-serif'>" + console_header + text2display + "</p>");
 
         }
 
