@@ -22,8 +22,7 @@ function linechartPlot() {
         dataName = group.keys;
         dataSource = group.source;
 
-        dataColor = [];
-
+        dataColor = []
         for (i = 0; i < dataLen; i++) {
             dataColor.push(colorMap(i));
         }
@@ -33,7 +32,7 @@ function linechartPlot() {
         width = d3.select(selector).node().getBoundingClientRect().width;
 
         // set the dimensions and margins of the graph
-        let margin = {top: 20, right: 20, bottom: 20, left: 40},
+        let margin = {top: 20, right: 20, bottom: 20, left: 20},
         _width = width - margin.left - margin.right,
         _height = height - margin.top - margin.bottom;
 
@@ -266,14 +265,11 @@ function linechartPlot() {
             }
 
             // Update axis and line position
-            xAxis.transition().duration(1000)
-                .call(d3.axisBottom(xScale));
+            xAxis.call(d3.axisBottom(xScale));
 
             for (i = 0; i < dataLen; i++) {
                 line[i]
                     .select('.line')
-                    //.transition()
-                    //.duration(1000)
                     .attr("d", d3.line()
                     .x(function(d) { return xScale(d.time) })
                     .y(function(d) { return yScale(d[dataName[i]]) })

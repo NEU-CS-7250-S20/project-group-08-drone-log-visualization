@@ -28,6 +28,27 @@ function consoleDisplay() {
             //.attr("height", _height + margin.top + margin.bottom)
             //.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+        // add dropdown menu for filtering messages
+        let startStep = 0
+        let currentStep = data.length
+        let filter_level = "Filter Smon+Comm"
+        let dropdown = d3.select(selector)
+            .insert("select", "svg")
+            .attr("style", "display: block;")
+            .on("change", function() {
+                filter_level = d3.select(this).property("value");
+                filterText(filter_level);
+            });            
+
+        let groups = ["Filter Smon+Comm", "Filter Smon", "Filter Comm", "No Filter"]
+        dropdown.selectAll("option")
+            .data(groups)
+            .enter().append("option")
+            .attr("value", function(d) { return d; })
+            .text(function (d) {
+                return d;
+            });
+
         let frObject = svg
                 .append('foreignObject')
                 .attr("width", _width)
@@ -38,14 +59,14 @@ function consoleDisplay() {
         let div = frObject
                     .append('xhtml:div')
                     .attr("class", "log-console")
-                    .attr("style", "border-left: 1px solid; border-right: 1px solid")
                     .html("");
 
         let text2display = "";
-        let maxTimeStep = data.length;
-        for (i = 0; i < maxTimeStep; i++)
+        for (i = 0; i < currentStep; i++)
         {
-            text2display += data[i].time + " " + data[i].message + "<br>";            
+            // Default is filter Comm + Smon
+            if ((!data[i].message.includes("[K")) && (!data[i].message.includes("[U")) && (!data[i].message.includes("smon")))
+                text2display += data[i].time + " " + data[i].message + "<br>";            
         }
 
         div.html("<p class='console-text-style'>" + "<font size='3px'; font-family='sans-serif'>" + console_header + text2display) + "</p>";
@@ -66,9 +87,38 @@ function consoleDisplay() {
 
             text2display = "";
 
+            filterText(filter_level)
+
+        }
+
+        function filterText(level) {
+
+            text2display = "";
+
             for (i = startStep; i < currentStep; i++)
             {
-                text2display += data[i].time + data[i].message + "<br>";            
+                if (level == "Filter Smon")
+                {
+                    if (!data[i].message.includes("smon"))
+                        text2display += data[i].time + " " + data[i].message + "<br>";   
+                }
+
+                else if (level == "Filter Comm")
+                {
+                    if ((!data[i].message.includes("[K")) && (!data[i].message.includes("[U]")))
+                        text2display += data[i].time + " " + data[i].message + "<br>";   
+                }      
+
+                else if (level == "Filter Smon+Comm")
+                {
+                    if ((!data[i].message.includes("[K")) && (!data[i].message.includes("[U")) && (!data[i].message.includes("smon")))
+                        text2display += data[i].time + " " + data[i].message + "<br>";   
+                }                      
+                
+                else
+                {
+                    text2display += data[i].time + " " + data[i].message + "<br>";   
+                }
             }
 
             div.html("<p class='console-text-style'>" + "<font size='3px'; font-family='sans-serif'>" + console_header + text2display) + "</p>";

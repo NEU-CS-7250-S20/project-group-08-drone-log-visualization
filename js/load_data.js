@@ -395,110 +395,110 @@ function createGroups(t02, t15) {
     return [
         {
             keys: ["groundSpeed"],
-            name: "Ground Speed",
-            legends: ["gndS [km/h]"],
+            name: "Ground Speed [km/h]",
+            legends: ["gndS"],
             source: t02
         },
         {
             keys: ["airSpeed"],
-            name: "Airspeed",
-            legends: ["airS [km/h]"],
+            name: "Airspeed [km/h]",
+            legends: ["airS"],
             source: t02
         },
         {
             keys: ["windSpeed"],
-            name: "Wind Speed",
-            legends: ["windS [km/h]"],
+            name: "Wind Speed [km/h]",
+            legends: ["windS"],
             source: t02
         },
         {
             keys: ["altitude"],
-            name: "Altitude",
-            legends: ["alt [m]"],
+            name: "Altitude [m]",
+            legends: ["alt"],
             source: t02
         },
         {
             keys: ["phi", "theta", "psi"],
-            name: "Angles",
-            legends: ["phi [deg]", "theta [deg]", "psi [deg]"],
+            name: "Angles [o]",
+            legends: ["phi", "theta", "psi"],
             source: t02
         },
         {
             keys: ["phi"],
-            name: "phi",
-            legends: ["phi [deg]"],
+            name: "phi [o]",
+            legends: ["phi"],
             source: t02
         }, 
         {
             keys: ["theta"],
-            name: "theta",
-            legends: ["theta [deg]"],
+            name: "theta [o]",
+            legends: ["theta"],
             source: t02
         }, 
         {
             keys: ["psi"],
-            name: "psi",
-            legends: ["psi [deg]"],
+            name: "psi [o]",
+            legends: ["psi"],
             source: t02
         },                        
         {
             keys: ["accX", "accY", "accZ"],
-            name: "Accelerations",
-            legends: ["aX [m/s]", "aY [m/s]", "aZ [m/s]"],
+            name: "Accelerations [m/s]",
+            legends: ["aX", "aY", "aZ"],
             source: t02
         },
         {
             keys: ["accX"],
-            name: "acc_x",
-            legends: ["aX [m/s]"],
+            name: "acc_x [m/s]",
+            legends: ["aX"],
             source: t02
         }, 
         {
             keys: ["accY"],
-            name: "acc_y",
-            legends: ["aY [m/s]"],
+            name: "acc_y [m/s]",
+            legends: ["aY"],
             source: t02
         },   
         {
             keys: ["accZ"],
-            name: "acc_z",
-            legends: ["aZ [m/s]"],
+            name: "acc_z [m/s]",
+            legends: ["aZ"],
             source: t02
         },                          
         {
             keys: ["P", "Q", "R"],
-            name: "Angular Velocities",
-            legends: ["p [rad/s]", "q [rad/s]", "r [rad/s]"],
+            name: "Angular Velocities [rad/s]",
+            legends: ["p", "q", "r"],
             source: t02
         },
         {
             keys: ["P"],
-            name: "P",
-            legends: ["p [rad/s]"],
+            name: "P [rad/s]",
+            legends: ["p"],
             source: t02
         },       
         {
             keys: ["Q"],
-            name: "Q",
-            legends: ["q [rad/s]"],
+            name: "Q [rad/s]",
+            legends: ["q"],
             source: t02
         },    
         {
             keys: ["R"],
-            name: "R",
-            legends: ["r [rad/s]"],
+            name: "R [rad/s]",
+            legends: ["r"],
             source: t02
         },               
         {
             keys: ["uUpper"],
-            name: "Battery Voltage",
-            legends: ["uUpper [V]"],
+            name: "Batt U [V]",
+            legends: ["uUpper"],
             source: t15
         },
         {
             keys: ["iUpper"],
-            name: "Battery Current",
-            legends: ["iUpper [A]"],
+            name: "Batt I [A]",
+            legends: ["iUpper"],
             source: t15
         }        
     ];
