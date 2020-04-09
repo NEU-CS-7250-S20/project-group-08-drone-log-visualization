@@ -25,7 +25,7 @@ function linechartPlot() {
         dataSource = group.source;
 
         dataColor = [];
-        for (i = 0; i < dataLen; i++) {
+        for (let i = 0; i < dataLen; i++) {
             dataColor.push(colorMap(i));
         }
 
@@ -90,9 +90,9 @@ function linechartPlot() {
         }
 
         // Get data to draw from log
-        for (name_index = 0; name_index < dataLen; name_index++)
+        for (let name_index = 0; name_index < dataLen; name_index++)
         {
-            for (i = 0; i < dataSource.length; i++)
+            for (let i = 0; i < dataSource.length; i++)
             {
                 data2draw[name_index].push(dataSource[i][dataName[name_index]]);
                 timeStep.push(dataSource[i].time);
@@ -290,7 +290,7 @@ function linechartPlot() {
         svg.on("dblclick",function(){
             xScale.domain(d3.extent(dataSource, function(d) { return d.time; }));
             xAxis.transition().call(d3.axisBottom(xScale));
-            for (i = 0; i < dataLen; i++) {
+            for (let i = 0; i < dataLen; i++) {
                 line[i]
                     .select(".line")
                     //.transition()
