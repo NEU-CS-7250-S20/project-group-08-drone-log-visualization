@@ -424,17 +424,71 @@ function createGroups(t02, t15) {
             source: t02
         },
         {
+            keys: ["phi"],
+            name: "phi",
+            legends: ["phi [deg]"],
+            source: t02
+        }, 
+        {
+            keys: ["theta"],
+            name: "theta",
+            legends: ["theta [deg]"],
+            source: t02
+        }, 
+        {
+            keys: ["psi"],
+            name: "psi",
+            legends: ["psi [deg]"],
+            source: t02
+        },                        
+        {
             keys: ["accX", "accY", "accZ"],
             name: "Accelerations",
             legends: ["aX [m/s]", "aY [m/s]", "aZ [m/s]"],
             source: t02
         },
         {
+            keys: ["accX"],
+            name: "acc_x",
+            legends: ["aX [m/s]"],
+            source: t02
+        }, 
+        {
+            keys: ["accY"],
+            name: "acc_y",
+            legends: ["aY [m/s]"],
+            source: t02
+        },   
+        {
+            keys: ["accZ"],
+            name: "acc_z",
+            legends: ["aZ [m/s]"],
+            source: t02
+        },                          
+        {
             keys: ["P", "Q", "R"],
             name: "Angular Velocities",
             legends: ["p [rad/s]", "q [rad/s]", "r [rad/s]"],
             source: t02
         },
+        {
+            keys: ["P"],
+            name: "P",
+            legends: ["p [rad/s]"],
+            source: t02
+        },       
+        {
+            keys: ["Q"],
+            name: "Q",
+            legends: ["q [rad/s]"],
+            source: t02
+        },    
+        {
+            keys: ["R"],
+            name: "R",
+            legends: ["r [rad/s]"],
+            source: t02
+        },               
         {
             keys: ["uUpper"],
             name: "Battery Voltage",
