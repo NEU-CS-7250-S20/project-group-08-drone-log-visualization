@@ -125,7 +125,7 @@ function linechartPlot() {
         let yAxis = svg.append("g").call(d3.axisLeft(yScale));
 
         // add clip path
-        /*
+
         let clip = svg.append("defs").append("svg:clipPath")
             .attr("id", "clip")
             .append("svg:rect")
@@ -133,7 +133,7 @@ function linechartPlot() {
             .attr("height", heightMinusMargins)
             .attr("x", 0)
             .attr("y", 0);
-        */
+        
         // add brushing
         let brush = d3.brushX()
             .extent([[0, 0], [widthMinusMargins, heightMinusMargins]])
@@ -306,16 +306,11 @@ function linechartPlot() {
         d3.select(window).on("resize." + index, function() {
             // update size
             setWidthHeightAndWHMinusMargins();
+
             // update svg size
             svgBase
                 .attr("width", width)
                 .attr("height", height);
-
-
-
-            //clip
-            //    .attr("width", widthMinusMargins )
-            //    .attr("height", heightMinusMargins);
 
             // update axes
             xScale.range([0, widthMinusMargins]);
@@ -324,13 +319,19 @@ function linechartPlot() {
             xAxis.call(d3.axisBottom(xScale));
             xAxis.attr("transform", "translate(0," + heightMinusMargins + ")");
             yAxis.call(d3.axisLeft(yScale));
+
             // update brushing
+            clip
+                .attr("width", widthMinusMargins )
+                .attr("height", heightMinusMargins);
+
             brush.extent([[0,0], [widthMinusMargins, heightMinusMargins]]);
 
             for (let i = 0; i < dataLen; i++) {
                 lineBrush[i]
                     .call(brush);
             }
+
             // redraw lines
             for (let i = 0; i < dataLen; i++) {
                 line[i].selectAll(".line")
@@ -338,6 +339,7 @@ function linechartPlot() {
                         return lineObj[i](d);
                     });
             }
+
             // update grid lines
             xGridLines
                 .attr("transform", "translate(0," + heightMinusMargins + ")")
@@ -353,6 +355,7 @@ function linechartPlot() {
                     .tickSize(- widthMinusMargins)
                     .tickFormat("")
                 );
+
             // update legends
             xLegend
                 .attr("x", widthMinusMargins - 30)
