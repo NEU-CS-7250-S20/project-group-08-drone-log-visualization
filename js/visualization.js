@@ -3,6 +3,7 @@
     const DELIMITED = ";";
     const SELECTION_STRING = "selection";
     const CHANGE_STRING = "change";
+    const HIGHLIGHT_STRING = "highlight";
 
     // load telemetry data
     Promise.all([
@@ -36,7 +37,7 @@
         let mapDispatcher = d3.dispatch(SELECTION_STRING);
         let linechartDispatchers = [];
         for (let i = 0; i < 8; i++) {
-            linechartDispatchers.push(d3.dispatch(SELECTION_STRING, CHANGE_STRING));
+            linechartDispatchers.push(d3.dispatch(SELECTION_STRING, CHANGE_STRING, HIGHLIGHT_STRING));
         }
 
         // create groups of datapoint to display at once
@@ -66,6 +67,7 @@
 
             for (let j = 0; j < 8; j++) {
                 linechartDispatchers[i].on(SELECTION_STRING + ".l" + j, linecharts[j].updateSelection);
+                linechartDispatchers[i].on(HIGHLIGHT_STRING + ".l" + j, linecharts[j].moveHighlight)
             }
         }
 
