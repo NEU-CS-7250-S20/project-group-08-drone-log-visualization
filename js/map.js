@@ -257,11 +257,15 @@ function mapplot() {
         }
 
         function addMarker(position, text, map) {
-            return new google.maps.Marker({
+            let marker = new google.maps.Marker({
                 position: position,
                 label: text,
                 map: map
             });
+            marker.addListener("mouseover", () => {
+                deleteMapPopup(popup);
+            });
+            return marker;
         }
 
         function updateMapPopupContent(d, popupContent) {
