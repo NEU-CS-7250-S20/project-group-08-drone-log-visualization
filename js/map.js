@@ -96,10 +96,6 @@ function mapplot() {
 
         let flightPaths = [];
 
-        // selection variables
-        let selectStartIdx = null,
-            selectEndIdx = null;
-
         // start and end markers
         let startMarker = null;
         let endMarker = null;
@@ -163,7 +159,7 @@ function mapplot() {
             flightPaths = addPath(coordinates, map, pathSegmentsSubset);
 
             // add listeners for on hover
-            for (i = 0; i < flightPaths.length; i++) {
+            for (let i = 0; i < flightPaths.length; i++) {
                 flightPaths[i].addListener("mouseover", function(d) {
                     updateMapPopupContent(d, popupContent);
                     popup = updateMapPopup(d, popup, popupContent);
@@ -172,8 +168,6 @@ function mapplot() {
                 flightPaths[i].addListener("mouseout", function(d) {
                     deleteMapPopup(popup);
                 });
-
-                flightPaths[i].addListener("click", updateSelection);
             }
 
             // remove end marker and add a new one
@@ -320,36 +314,6 @@ function mapplot() {
             }
 
             return idx;
-        }
-
-        function updateSelection(d) {
-            let lat = d.latLng.lat(), lon = d.latLng.lng();
-            let index = findClosestPoint(lon, lat, t02Subset);
-
-            if (selectEndIdx !== null) {
-                // reset previous selection
-                selectStartIdx = null;
-                selectEndIdx = null;
-                updateMapDispatcher.call(UPDATE_MAP_STRING);
-            }
-
-            if (selectStartIdx !== null) {
-                // selection completed
-                selectEndIdx = index;
-
-                if (selectStartIdx > selectEndIdx) {
-                    let tmp = selectEndIdx;
-                    selectEndIdx = selectStartIdx;
-                    selectStartIdx = tmp;
-                }
-
-                // update map
-                updateMapDispatcher.call(UPDATE_MAP_STRING);
-
-            } else {
-                // selection started
-                selectStartIdx = index;
-            }
         }
 
         function moveSegments(segments, startIdx) {
