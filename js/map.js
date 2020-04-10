@@ -40,12 +40,51 @@ function mapplot() {
         startPoint = 0;
         endPoint = t02.length - 1;
 
+        function ResetControl(controlDiv) {
+
+            // Set CSS for the control border.
+            let controlUI = document.createElement("div");
+            controlUI.style.backgroundColor = "#fff";
+            controlUI.style.border = "2px solid #fff";
+            controlUI.style.borderRadius = "3px";
+            controlUI.style.boxShadow = "0 2px 6px rgba(0,0,0,.3)";
+            controlUI.style.cursor = "pointer";
+            controlUI.style.marginBottom = "22px";
+            controlUI.style.textAlign = "center";
+            controlUI.title = "Click to reset selection";
+            controlDiv.appendChild(controlUI);
+
+            // Set CSS for the control interior.
+            let controlText = document.createElement("div");
+            controlText.style.color = "rgb(25,25,25)";
+            controlText.style.fontFamily = "Roboto,Arial,sans-serif";
+            controlText.style.fontSize = "16px";
+            controlText.style.lineHeight = "38px";
+            controlText.style.paddingLeft = "5px";
+            controlText.style.paddingRight = "5px";
+            controlText.innerHTML = "Reset Selection";
+            controlUI.appendChild(controlText);
+
+            // Setup the click event listeners
+            controlUI.addEventListener("click", function() {
+                let dispatchString = Object.getOwnPropertyNames(selectionDispatcher._)[0];
+                selectionDispatcher.call(dispatchString, this, [t02[0].time, t02[t02.length-1].time]);
+            });
+
+        }
+
         let map = new google.maps.Map(d3.select(mapSelector).node(), {
             zoom: 15,
             streetViewControl: false,
             center: new google.maps.LatLng(avgLat, avgLon),
             mapTypeId: google.maps.MapTypeId.HYBRID
         });
+
+        let resetControlDiv = document.createElement("div");
+        let resetControl = new ResetControl(resetControlDiv);
+        resetControlDiv.index = 1;
+
+        map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(resetControlDiv);
 
         // get coordinates for map
         let coordinates = objectsToGMapsCoordinates(t02Subset);
@@ -72,11 +111,11 @@ function mapplot() {
             .min(minTime)
             .max(maxTime)
             .width(Math.round(width * SLIDER_WIDTH_FRACTION))
-            //.tickFormat(d3.format('.2'))
+            //.tickFormat(d3.format(".2"))
             .ticks(10)
             .default([minTime, maxTime])
             .fill("#2196f3")
-            .on('onchange', function(val) {
+            .on("onchange", function(val) {
 
                 // propagate selection
                 let dispatchString = Object.getOwnPropertyNames(selectionDispatcher._)[0];
@@ -125,12 +164,12 @@ function mapplot() {
 
             // add listeners for on hover
             for (i = 0; i < flightPaths.length; i++) {
-                flightPaths[i].addListener('mouseover', function(d) {
+                flightPaths[i].addListener("mouseover", function(d) {
                     updateMapPopupContent(d, popupContent);
                     popup = updateMapPopup(d, popup, popupContent);
                 });
 
-                flightPaths[i].addListener('mouseout', function(d) {
+                flightPaths[i].addListener("mouseout", function(d) {
                     deleteMapPopup(popup);
                 });
 

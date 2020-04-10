@@ -133,7 +133,7 @@ function linechartPlot() {
             .attr("height", heightMinusMargins)
             .attr("x", 0)
             .attr("y", 0);
-        
+
         // add brushing
         let brush = d3.brushX()
             .extent([[0, 0], [widthMinusMargins, heightMinusMargins]])
