@@ -252,6 +252,122 @@ function linechartPlot() {
             updateChart(d);
         });
 
+        // create  a group for mouseover effects
+        let mouseG = svg.append("g").attr("class", "mouse-over-effects");
+
+        // add a vertical line
+        mouseG.append("path")
+            .attr("class", "mouse-line")
+            .attr("pointer-events", "none")
+            .style("stroke", "black")
+            .style("stroke-width", "1px")
+            .style("opacity", "0");
+
+        // add a circle for each attribute
+        let mousePerLine = mouseG.selectAll(".mouse-per-line")
+            .data(dataName)
+            .enter()
+            .append("g")
+            .attr("class", "mouse-per-line");
+
+        mousePerLine.append("circle")
+            .attr("r", 7)
+            .style("stroke", function(d) {
+                let tmpIndex = dataName.findIndex((element) => element === d);
+                return dataColor[tmpIndex];
+            })
+            .style("fill", "none")
+            .style("stroke-width", "1px")
+            .style("opacity", "0");
+
+        // add a text box for each attribute
+        mousePerLine.append("text")
+            .attr("transform", "translate(10, 3)");
+
+        // add the trigger area for mouseover
+        let lines = svg.node().getElementsByClassName("line");
+
+        svg
+            .on("mouseout", function() {
+                // hide all mouse over effects when the pointer exists the graph
+                svg.select(".mouse-line")
+                    .style("opacity", "0");
+                svg.selectAll(".mouse-per-line circle")
+                    .style("opacity", "0");
+                svg.selectAll(".mouse-per-line text")
+                    .style("opacity", "0");
+            })
+            .on("mouseover", function () {
+                // show mouse over effects when inside of the graph
+                svg.select(".mouse-line")
+                    .style("opacity", "1");
+                svg.selectAll(".mouse-per-line circle")
+                    .style("opacity", "1");
+                svg.selectAll(".mouse-per-line text")
+                    .style("opacity", "1");
+            })
+            .on("mousemove", function() {
+
+                // get mouse location
+                let mouse = d3.mouse(this);
+
+                // move the mouse line to mouse location
+                svg.select(".mouse-line")
+                    .attr("d", function() {
+                        let top = (height - margin.bottom - margin.top),
+                            bottom = 0,
+                            loc = mouse[0];
+
+                        return "M" + loc + "," + top + " " + loc + "," + bottom;
+                    });
+
+                // move the circle and update text box value
+                svg.selectAll(".mouse-per-line")
+                    .attr("transform", function(d, i) {
+
+                        /*
+                        We know the x position of the mouse and we want to find the corresponding y
+                        position of the two lines at x. Do a binary search on the total length
+                        of the line to find a point with the x position corresponding to the mouse x.
+                        https://bl.ocks.org/larsenmtl/e3b8b7c2ca4787f77d78f58d41c3da91
+                        */
+
+                        // the initial interval is 0 - line length
+                        let beginning = 0,
+                            end = lines[i].getTotalLength(),
+                            target = null;
+
+                        while (true) {
+
+                            target = Math.floor((beginning + end) / 2);
+
+                            pos = lines[i].getPointAtLength(target);
+                            if ((target === end || target === beginning) && pos.x !== mouse[0]) {
+                                // search converged, ignoring fractions
+                                break;
+                            }
+
+                            if (pos.x > mouse[0]) {
+                                // target is to the left of the end of the interval
+                                end = target;
+                            } else if (pos.x < mouse[0]) {
+                                // target is to the right of the beginning of the interval
+                                beginning = target;
+                            } else{
+                                // search converged including all decimal places; never happens
+                                break;
+                            }
+                        }
+
+                        // add the correct value to the text box
+                        d3.select(this).select("text")
+                            .text(d3.format(".2f")(yScale.invert(pos.y)));
+
+                        // move the circle
+                        return "translate(" + mouse[0] + "," + pos.y + ")";
+                    })
+            });
+
         function updateChart(d) {
 
             // clear selection
