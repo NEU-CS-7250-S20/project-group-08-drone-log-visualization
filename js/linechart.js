@@ -238,7 +238,7 @@ function linechartPlot() {
             yLegendTexts.push(
                 svg.append("text")
                     .attr("x", widthMinusMargins / (dataLen + 1) * i + 8)
-                    .attr("y",-5).text(dataLegend[i-1])
+                    .attr("y", -5).text(dataLegend[i-1])
                     .style("font-size", "10px", "font-family", "sans-serif")
                     .attr("alignment-baseline","middle")
             );
@@ -363,8 +363,8 @@ function linechartPlot() {
 
             for (let i = 0; i < dataLen; i++) {
 
-                yLegendCircles[i].attr("cx",widthMinusMargins / (dataLen + 1) * i);
-                yLegendTexts[i].attr("x", widthMinusMargins / (dataLen + 1) * i + 8);
+                yLegendCircles[i].attr("cx",widthMinusMargins / (dataLen + 1) * (i + 1));
+                yLegendTexts[i].attr("x", widthMinusMargins / (dataLen + 1) * (i + 1) + 8);
 
             }
 
