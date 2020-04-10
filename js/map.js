@@ -3,6 +3,8 @@ function mapplot() {
     const UPDATE_MAP_STRING = "updateMap";
     const SLIDER_WIDTH_FRACTION = 0.6;
     const SLIDER_MARGIN = 200;
+    const LEGEND_TEXT = "<b>S</b>: start<br><b>E</b>: end<br><b>LI</b>: link error<br><b>GS</b>: GPS error<br><b>SE</b>: sensor error<br><i>(Click to hide)</i>";
+    const SHOW_LEGEND_TEXT = "Show Legend";
 
     let mapStrokeWeight= 2,
         selectionDispatcher,
@@ -39,6 +41,7 @@ function mapplot() {
         let pathMarkers = [];
         startPoint = 0;
         endPoint = t02.length - 1;
+        let mapLegendShown = false;
 
         function ResetControl(controlDiv) {
 
@@ -73,6 +76,44 @@ function mapplot() {
 
         }
 
+        function MapLegend(legendDiv) {
+
+            // Set CSS for the control border.
+            let controlUI = document.createElement("div");
+            controlUI.style.backgroundColor = "rgba(255, 255, 255, 1.0)";
+            controlUI.style.border = "2px solid #fff";
+            controlUI.style.borderRadius = "3px";
+            controlUI.style.boxShadow = "0 2px 6px rgba(0,0,0,.3)";
+            controlUI.style.cursor = "pointer";
+            controlUI.style.marginBottom = "22px";
+            controlUI.style.textAlign = "center";
+            controlUI.title = "";
+            legendDiv.appendChild(controlUI);
+
+            // Set CSS for the control interior.
+            let controlText = document.createElement("div");
+            controlText.style.color = "rgb(25,25,25)";
+            controlText.style.fontFamily = "Roboto,Arial,sans-serif";
+            controlText.style.fontSize = "16px";
+            controlText.style.lineHeight = "38px";
+            controlText.style.paddingLeft = "5px";
+            controlText.style.paddingRight = "5px";
+            controlText.style.textAlign = "left";
+            controlText.innerHTML = SHOW_LEGEND_TEXT;
+            controlUI.appendChild(controlText);
+
+            // Setup the click event listeners
+            controlUI.addEventListener("click", function() {
+                if (mapLegendShown === true) {
+                    controlText.innerHTML = SHOW_LEGEND_TEXT;
+                } else {
+                    controlText.innerHTML = LEGEND_TEXT;
+                }
+                mapLegendShown = !mapLegendShown;
+            });
+
+        }
+
         let map = new google.maps.Map(d3.select(mapSelector).node(), {
             zoom: 15,
             streetViewControl: false,
@@ -84,7 +125,12 @@ function mapplot() {
         let resetControl = new ResetControl(resetControlDiv);
         resetControlDiv.index = 1;
 
+        let mapLegendDiv = document.createElement("div");
+        let mapLegend = new MapLegend(mapLegendDiv);
+        mapLegendDiv.index = 2;
+
         map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(resetControlDiv);
+        map.controls[google.maps.ControlPosition.LEFT_CENTER].push(mapLegendDiv);
 
         // get coordinates for map
         let coordinates = objectsToGMapsCoordinates(t02Subset);
