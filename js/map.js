@@ -130,7 +130,7 @@ function mapplot() {
         mapLegendDiv.index = 2;
 
         map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(resetControlDiv);
-        map.controls[google.maps.ControlPosition.LEFT_CENTER].push(mapLegendDiv);
+        map.controls[google.maps.ControlPosition.LEFT_TOP].push(mapLegendDiv);
 
         // get coordinates for map
         let coordinates = objectsToGMapsCoordinates(t02Subset);
