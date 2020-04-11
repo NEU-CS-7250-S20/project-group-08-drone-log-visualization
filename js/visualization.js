@@ -50,7 +50,7 @@
         let logConsole = consoleDisplay()("#console", log);
 
         let linecharts = [
-            linechartPlot().selectionDispatcher(linechartDispatchers[0])("#line-chart-big", groupsBig[0], groupsBig, 0)
+            linechartPlotBig().selectionDispatcher(linechartDispatchers[0])("#line-chart-big", [groupsBig[0], groupsBig[1], null], groupsBig, 0)
         ];
         for (let i = 1; i < 8; i++) {
             linecharts.push(
@@ -76,19 +76,21 @@
         function setOnLinechartChange(i) {
             linechartDispatchers[i].on(CHANGE_STRING, function(group) {
 
-                let name, tmpGroups;
+                let name, tmpGroups, fc;
 
                 if (i === 0) {
+                    fc = linechartPlotBig();
                     name = "#line-chart-big";
                     tmpGroups = groupsBig;
                 } else {
+                    fc = linechartPlot();
                     name = "#line-chart-" + i;
                     tmpGroups = groupsSmall;
                 }
 
                 // https://stackoverflow.com/questions/14422198/how-do-i-remove-all-children-elements-from-a-node-and-then-apply-them-again-with
                 d3.select(name).selectAll("*").remove();
-                linecharts[i] = linechartPlot().selectionDispatcher(linechartDispatchers[i])(name, group, tmpGroups, i);
+                linecharts[i] = fc.selectionDispatcher(linechartDispatchers[i])(name, group, tmpGroups, i);
 
                 mapDispatcher.on(SELECTION_STRING + ".l" + i, linecharts[i].updateSelection);
 
