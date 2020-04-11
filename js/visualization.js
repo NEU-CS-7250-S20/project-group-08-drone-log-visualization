@@ -41,19 +41,20 @@
         }
 
         // create groups of datapoint to display at once
-        // e.g. we wnat to show the acceleration in all three axes at once
-        let groups = createGroups(t02, t15);
+        // e.g. we want to show the acceleration in all three axes at once
+        let groupsBig = createGroupsBig(t02, t15);
+        let groupsSmall = createGroupsSmall(t02, t15);
 
         // create plots
         let map = mapplot().selectionDispatcher(mapDispatcher).mapStrokeWeight(3)("#map", "div#map-slider", t02, pathSegments);
         let logConsole = consoleDisplay()("#console", log);
 
         let linecharts = [
-            linechartPlot().selectionDispatcher(linechartDispatchers[0])("#line-chart-big", groups[0], groups, 0)
+            linechartPlot().selectionDispatcher(linechartDispatchers[0])("#line-chart-big", groupsBig[0], groupsBig, 0)
         ];
         for (let i = 1; i < 8; i++) {
             linecharts.push(
-                linechartPlot().selectionDispatcher(linechartDispatchers[i])("#line-chart-" + i, groups[i], groups, i)
+                linechartPlot().selectionDispatcher(linechartDispatchers[i])("#line-chart-" + i, groupsSmall[i], groupsSmall, i)
             )
         }
 
@@ -75,17 +76,19 @@
         function setOnLinechartChange(i) {
             linechartDispatchers[i].on(CHANGE_STRING, function(group) {
 
-                let name;
+                let name, tmpGroups;
 
                 if (i === 0) {
                     name = "#line-chart-big";
+                    tmpGroups = groupsBig;
                 } else {
                     name = "#line-chart-" + i;
+                    tmpGroups = groupsSmall;
                 }
 
                 // https://stackoverflow.com/questions/14422198/how-do-i-remove-all-children-elements-from-a-node-and-then-apply-them-again-with
                 d3.select(name).selectAll("*").remove();
-                linecharts[i] = linechartPlot().selectionDispatcher(linechartDispatchers[i])(name, group, groups, i);
+                linecharts[i] = linechartPlot().selectionDispatcher(linechartDispatchers[i])(name, group, tmpGroups, i);
 
                 mapDispatcher.on(SELECTION_STRING + ".l" + i, linecharts[i].updateSelection);
 
