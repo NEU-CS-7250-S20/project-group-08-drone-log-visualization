@@ -529,8 +529,8 @@ function linechartPlot() {
                 }
 
                 // add the correct value to the text box
-                // d3.select(this).select("text")
-                //     .text(d3.format(".2f")(yScale.invert(pos.y)));
+                d3.select(this).select("text")
+                    .text(d3.format(".2f")(yScale.invert(pos.y)));
 
                 // move the circle
                 return "translate(" + mouseX + "," + pos.y + ")";
