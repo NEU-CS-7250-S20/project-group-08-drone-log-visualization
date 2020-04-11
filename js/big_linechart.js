@@ -35,6 +35,20 @@ function linechartPlotBig() {
             }
         });
 
+        let maxValueOfFirst;
+        let scales = [1.0];
+
+        for (let i = 0; i < dataName.length; i++) {
+            if (i === 0) {
+                maxValueOfFirst = d3.max(dataSource[i], d => d[dataName[i]]);
+            } else {
+                let tmpMaxValue = d3.max(dataSource[i], d => d[dataName[i]]);
+                scales.push(maxValueOfFirst / tmpMaxValue);
+            }
+        }
+
+        console.log(scales);
+
         dataColor = [];
         for (let i = 0; i < dataLen; i++) {
             dataColor.push(colorMap(i));
@@ -123,7 +137,7 @@ function linechartPlotBig() {
         {
             for (let i = 0; i < dataSource[name_index].length; i++)
             {
-                data2draw[name_index].push(dataSource[name_index][i][dataName[name_index]]);
+                data2draw[name_index].push(dataSource[name_index][i][dataName[name_index]] * scales[name_index]);
                 timeStep.push(dataSource[name_index][i].time);
             }
 
@@ -198,7 +212,7 @@ function linechartPlotBig() {
 
             let tmpLineObj = d3.line()
                 .x(function(d) { return xScale(d.time) })
-                .y(function(d) { return yScale(d[dataName[i]]) });
+                .y(function(d) { return yScale(d[dataName[i]] * scales[i]) });
             lineObj.push(tmpLineObj);
 
             line[i].append("path")
@@ -266,7 +280,7 @@ function linechartPlotBig() {
             yLegendTexts.push(
                 svg.append("text")
                     .attr("x", widthMinusMargins / (dataLen + 1) * i + 8)
-                    .attr("y", -5).text(dataLegend[i-1])
+                    .attr("y", -5).text(dataLegend[i-1] + "     [" + d3.format(".2f")(scales[i - 1]) + "x]")
                     .style("font-size", "10px", "font-family", "sans-serif")
                     .attr("alignment-baseline","middle")
             );
