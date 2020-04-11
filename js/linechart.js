@@ -276,7 +276,7 @@ function linechartPlot() {
                 return dataColor[tmpIndex];
             })
             .style("fill", "none")
-            .style("stroke-width", "1px")
+            .style("stroke-width", "0px")
             .style("opacity", "0");
 
         // add a text box for each attribute

@@ -91,6 +91,7 @@
 
                 for (let j = 0; j < 8; j++) {
                     linechartDispatchers[j].on(SELECTION_STRING + ".l" + i, linecharts[i].updateSelection);
+                    linechartDispatchers[j].on(HIGHLIGHT_STRING + ".l" + i, linecharts[i].moveHighlight)
                 }
 
             });
