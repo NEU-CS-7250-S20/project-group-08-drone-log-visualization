@@ -533,21 +533,57 @@ function createGroupsBig(t02, t15) {
             source: t02
         },
         {
-            keys: ["phi", "theta", "psi"],
-            name: "Angles [o]",
-            legends: ["phi", "theta", "psi"],
+            keys: ["phi"],
+            name: "phi [o]",
+            legends: ["phi"],
             source: t02
         },
         {
-            keys: ["accX", "accY", "accZ"],
-            name: "Accelerations [m/s]",
-            legends: ["aX", "aY", "aZ"],
+            keys: ["theta"],
+            name: "theta [o]",
+            legends: ["theta"],
             source: t02
         },
         {
-            keys: ["P", "Q", "R"],
-            name: "Angular Velocities [rad/s]",
-            legends: ["p", "q", "r"],
+            keys: ["psi"],
+            name: "psi [o]",
+            legends: ["psi"],
+            source: t02
+        },
+        {
+            keys: ["accX"],
+            name: "acc_x [m/s]",
+            legends: ["aX"],
+            source: t02
+        },
+        {
+            keys: ["accY"],
+            name: "acc_y [m/s]",
+            legends: ["aY"],
+            source: t02
+        },
+        {
+            keys: ["accZ"],
+            name: "acc_z [m/s]",
+            legends: ["aZ"],
+            source: t02
+        },
+        {
+            keys: ["P"],
+            name: "P [rad/s]",
+            legends: ["p"],
+            source: t02
+        },
+        {
+            keys: ["Q"],
+            name: "Q [rad/s]",
+            legends: ["q"],
+            source: t02
+        },
+        {
+            keys: ["R"],
+            name: "R [rad/s]",
+            legends: ["r"],
             source: t02
         },
         {

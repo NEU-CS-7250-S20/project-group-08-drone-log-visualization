@@ -327,7 +327,6 @@ function linechartPlot() {
 
             // If no selection, back to initial coordinate. Otherwise, update X axis domain
             if(!extent) {
-                console.log("BAD");
                 if (!idleTimeout) 
                     return idleTimeout = setTimeout(idled, 350);
             }
@@ -530,8 +529,8 @@ function linechartPlot() {
                 }
 
                 // add the correct value to the text box
-                d3.select(this).select("text")
-                    .text(d3.format(".2f")(yScale.invert(pos.y)));
+                // d3.select(this).select("text")
+                //     .text(d3.format(".2f")(yScale.invert(pos.y)));
 
                 // move the circle
                 return "translate(" + mouseX + "," + pos.y + ")";

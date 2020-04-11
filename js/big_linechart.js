@@ -35,19 +35,31 @@ function linechartPlotBig() {
             }
         });
 
-        let maxValueOfFirst;
-        let scales = [1.0];
+        let maxDataRaw = [];
+        let scales = [];
 
         for (let i = 0; i < dataName.length; i++) {
-            if (i === 0) {
-                maxValueOfFirst = d3.max(dataSource[i], d => d[dataName[i]]);
-            } else {
-                let tmpMaxValue = d3.max(dataSource[i], d => d[dataName[i]]);
-                scales.push(maxValueOfFirst / tmpMaxValue);
-            }
+            maxDataRaw.push(d3.max(dataSource[i], d => d[dataName[i]]));
+            // scales.push(maxValueOfFirst / tmpMaxValue);
         }
 
-        console.log(scales);
+        let maxValueRaw = d3.max(maxDataRaw);
+
+        for (let i = 0; i < maxDataRaw.length; i++) {
+            let tempScale = maxValueRaw / maxDataRaw[i];
+            if (tempScale < 5)
+                scales.push(1.0);
+            else if (tempScale < 10)
+                scales.push(5.0);
+            else if (tempScale < 20)
+                scales.push(10.0);
+            else if (tempScale < 50)
+                scales.push(20.0);
+            else if (tempScale < 100)
+                scales.push(50.0); 
+            else
+                scales.push(100.0);
+        }        
 
         dataColor = [];
         for (let i = 0; i < dataLen; i++) {
@@ -280,7 +292,7 @@ function linechartPlotBig() {
             yLegendTexts.push(
                 svg.append("text")
                     .attr("x", widthMinusMargins / (dataLen + 1) * i + 8)
-                    .attr("y", -5).text(dataLegend[i-1] + "     [" + d3.format(".2f")(scales[i - 1]) + "x]")
+                    .attr("y", -5).text(dataLegend[i-1] + "     [" + d3.format("d")(scales[i - 1]) + "x]")
                     .style("font-size", "10px", "font-family", "sans-serif")
                     .attr("alignment-baseline","middle")
             );
@@ -370,7 +382,6 @@ function linechartPlotBig() {
 
             // If no selection, back to initial coordinate. Otherwise, update X axis domain
             if(!extent) {
-                console.log("BAD");
                 if (!idleTimeout) 
                     return idleTimeout = setTimeout(idled, 350);
             }
@@ -578,8 +589,7 @@ function linechartPlotBig() {
 
                 // move the circle
                 return "translate(" + mouseX + "," + pos.y + ")";
-            });
-
+            });    
     };
 
     chart.selectionDispatcher = function(_) {
