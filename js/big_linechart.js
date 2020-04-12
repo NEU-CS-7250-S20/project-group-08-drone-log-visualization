@@ -64,7 +64,11 @@ function linechartPlotBig() {
         dataColor = [];
         for (let i = 0; i < dataLen; i++) {
             dataColor.push(colorMap(i));
-        }
+        }  
+        dataColor = [ 
+            "#4477AA",
+            "#66CCEE",
+            "#228833"]
 
         // get the size of the container
         setWidthHeightAndWHMinusMargins();
@@ -413,7 +417,7 @@ function linechartPlotBig() {
                     //.transition()
                     .attr("d", d3.line()
                     .x(function(d) { return xScale(d.time) })
-                    .y(function(d) { return yScale(d[dataName[i]]) })
+                    .y(function(d) { return yScale(d[dataName[i]] * scales[i]) })
                 );  
             }
             

@@ -25,6 +25,18 @@ function linechartPlot() {
         dataSource = group.source;
 
         dataColor = [];
+        dataColor = [ 
+        "#EE6677",
+        "#BB5566",
+        "#004488",
+        "#332288",
+        "#AA4499",
+        "#44AA99",
+        "#999933",
+        "#882255",
+        "#661100",
+        "#6699CC",
+        "#888888"]
         for (let i = 0; i < dataLen; i++) {
             dataColor.push(colorMap(i));
         }
