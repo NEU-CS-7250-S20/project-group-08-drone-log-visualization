@@ -402,7 +402,7 @@ function linechartPlotBig() {
                     .select(".line")
                     .attr("d", d3.line()
                     .x(function(d) { return xScale(d.time) })
-                    .y(function(d) { return yScale(d[dataName[i]]) })
+                    .y(function(d) { return yScale(d[dataName[i]] * scales[i]) })
                 ); 
             }
         }
