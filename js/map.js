@@ -23,7 +23,7 @@ function mapplot() {
         t02 = data;
         let lat = [], lon = [];
 
-        for (i = 0; i < t02.length; i++) {
+        for (let i = 0; i < t02.length; i++) {
             lat.push(t02[i].posLat);
             lon.push(t02[i].posLon);
         }
@@ -167,7 +167,6 @@ function mapplot() {
 
         let sliderSvg = d3.select(sliderSelector)
             .attr("style", "margin-left: 10%;")
-            //.attr("hidden", null)
             .append("svg")
             .attr("width", Math.round(width * SLIDER_WIDTH_FRACTION) + SLIDER_MARGIN)
             .attr("height", 100);
@@ -295,7 +294,7 @@ function mapplot() {
         }
 
         function removeFromMap(elements) {
-            for (i = 0; i < elements.length; i++) {
+            for (let i = 0; i < elements.length; i++) {
                 if (elements[i] !== null) {
                     elements[i].setMap(null);
                 }
@@ -349,7 +348,7 @@ function mapplot() {
             let dist = null;
             let idx = null;
 
-            for (i = 0; i < data.length;i++) {
+            for (let i = 0; i < data.length;i++) {
 
                 let tmpDist = Math.abs(lon - data[i].posLon) + Math.abs(lat - data[i].posLat);
 
@@ -458,7 +457,7 @@ function mapplot() {
         let startIdx = null,
             endIdx = null;
 
-        for (i = 0; i < t02.length; i++) {
+        for (let i = 0; i < t02.length; i++) {
             if (t02[i].time > startTime && startIdx === null) {
                 startIdx = i;
             } else if (t02[i].time > endTime && endIdx === null) {
