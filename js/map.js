@@ -268,13 +268,13 @@ function mapplot() {
                 let color;
 
                 if (segment.type === SEGMENT_NORMAL) {
-                    color = "#19ff58";
+                    color = "#b2abd2";
                 } else if (segment.type === SEGMENT_SENSOR_ERROR) {
-                    color = "#fffe3c";
+                    color = "#fdb863";
                 } else if (segment.type === SEGMENT_GPS_ERROR) {
-                    color = "#ffb21d";
+                    color = "#5e3c99";
                 } else {
-                    color = "#ff341b";
+                    color = "#e66101";
                 }
 
                 let path = new google.maps.Polyline({
