@@ -90,7 +90,9 @@
 
                 // https://stackoverflow.com/questions/14422198/how-do-i-remove-all-children-elements-from-a-node-and-then-apply-them-again-with
                 d3.select(name).selectAll("*").remove();
-                linecharts[i] = fc.selectionDispatcher(linechartDispatchers[i])(name, group, tmpGroups, i);
+                linecharts[i] = fc.selectionDispatcher(linechartDispatchers[i]).extent(linecharts[i].extent())(
+                    name, group, tmpGroups, i
+                );
 
                 mapDispatcher.on(SELECTION_STRING + ".l" + i, linecharts[i].updateSelection);
 

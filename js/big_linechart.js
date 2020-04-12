@@ -3,7 +3,8 @@ function linechartPlotBig() {
     const BRUSHING_STRING = "brushing";
 
     // width and height will be computed automatically
-    let width = null, height = null, widthMinusMargins = null, heightMinusMargins = null, svg = null, xScale, yScale, lines;
+    let width = null, height = null, widthMinusMargins = null, heightMinusMargins = null, svg = null, xScale, yScale,
+        lines, extent = null;
     let margin = {top: 20, right: 5, bottom: 20, left: 30};
     let dataColor = "red";
     let dataName="altitude";
@@ -144,7 +145,7 @@ function linechartPlotBig() {
         let minData = new Array(dataLen);
         let maxData = new Array(dataLen);
 
-        for (i = 0; i < dataLen; i++) {
+        for (let i = 0; i < dataLen; i++) {
             data2draw[i] = [];
         }
 
@@ -491,6 +492,10 @@ function linechartPlotBig() {
 
         });
 
+        if (extent !== null) {
+            updateChart(extent);
+        }
+
         function brushEventToTime(brushEvent) {
             return [xScale.invert(brushEvent[0]), xScale.invert(brushEvent[1])];
         }
@@ -599,6 +604,12 @@ function linechartPlotBig() {
     chart.selectionDispatcher = function(_) {
         if (!arguments.length) return selectionDispatcher;
         selectionDispatcher = _;
+        return chart;
+    };
+
+    chart.extent = function(_) {
+        if (!arguments.length) return extent;
+        extent = _;
         return chart;
     };
 

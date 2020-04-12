@@ -3,7 +3,8 @@ function linechartPlot() {
     const BRUSHING_STRING = "brushing";
 
     // width and height will be computed automatically
-    let width = null, height = null, widthMinusMargins = null, heightMinusMargins = null, svg = null, xScale, yScale, lines;
+    let width = null, height = null, widthMinusMargins = null, heightMinusMargins = null, svg = null, xScale, yScale,
+        lines, extent = null;
     let margin = {top: 20, right: 5, bottom: 20, left: 30};
     let dataColor = "red";
     let dataName="altitude";
@@ -444,6 +445,10 @@ function linechartPlot() {
 
         });
 
+        if (extent !== null) {
+            updateChart(extent);
+        }
+
         function brushEventToTime(brushEvent) {
             return [xScale.invert(brushEvent[0]), xScale.invert(brushEvent[1])];
         }
@@ -553,6 +558,12 @@ function linechartPlot() {
     chart.selectionDispatcher = function(_) {
         if (!arguments.length) return selectionDispatcher;
         selectionDispatcher = _;
+        return chart;
+    };
+
+    chart.extent = function(_) {
+        if (!arguments.length) return extent;
+        extent = _;
         return chart;
     };
 
