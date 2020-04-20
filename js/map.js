@@ -260,7 +260,7 @@ function mapplot() {
         updateMapDispatcher.call(UPDATE_MAP_STRING);
 
         function addPath(coordinates, map, pathSegments) {
-
+            // add path segments to the map
             let paths = [];
 
             pathSegments.forEach(segment => {
@@ -294,6 +294,7 @@ function mapplot() {
         }
 
         function removeFromMap(elements) {
+            // remove path segments from the map
             for (let i = 0; i < elements.length; i++) {
                 if (elements[i] !== null) {
                     elements[i].setMap(null);
@@ -302,6 +303,7 @@ function mapplot() {
         }
 
         function addMarker(position, text, map) {
+            // add markers for start, end and errors
             let marker = new google.maps.Marker({
                 position: position,
                 label: text,
@@ -314,6 +316,7 @@ function mapplot() {
         }
 
         function updateMapPopupContent(d, popupContent) {
+            // update the text in the popup box that is shown on mouseover
             let lat = d.latLng.lat(), lon = d.latLng.lng();
             let index = findClosestPoint(lon, lat, t02Subset);
 
@@ -327,6 +330,7 @@ function mapplot() {
         }
 
         function updateMapPopup(d, popup, popupContent) {
+            // update popups
             let lat = d.latLng.lat(), lon = d.latLng.lng();
 
             deleteMapPopup(popup);
@@ -338,13 +342,14 @@ function mapplot() {
         }
 
         function deleteMapPopup(popup) {
+            // delete popups
             if (popup !== null) {
                 popup.setMap(null);
             }
         }
 
         function findClosestPoint(lon, lat, data) {
-
+            // find the closest point to a particular latitude and longitude
             let dist = null;
             let idx = null;
 
@@ -366,7 +371,7 @@ function mapplot() {
         }
 
         function moveSegments(segments, startIdx) {
-
+            // update segments based on the current selection
             let newSegments = [];
 
             segments.forEach(segment => {
@@ -393,7 +398,7 @@ function mapplot() {
         }
 
         function getErrorMarkersForSegments(segments) {
-
+            // get error markers from segment data
             let markers = [];
 
             segments.forEach((segment, index) => {
@@ -453,7 +458,7 @@ function mapplot() {
     };
 
     function findIndexOfStartAndEndTime(startTime, endTime) {
-
+        // filter various types of messages
         let startIdx = null,
             endIdx = null;
 

@@ -12,10 +12,9 @@
         d3.dsv(DELIMITED, "data/sn11401003-2018-09-11-14-13-ses-00.T16.csv", parseT16),
         d3.text("data/sn11401003-2018-09-11-14-13-ses-00.mes")
     ]).then(function(files) {
-
+        // extract telemetry data
         let t02 = files[0],
             t15 = files[1],
-            t16 = files[2],
             log = files[3];
 
         // parse log
@@ -40,7 +39,7 @@
             linechartDispatchers.push(d3.dispatch(SELECTION_STRING, CHANGE_STRING, HIGHLIGHT_STRING));
         }
 
-        // create groups of datapoint to display at once
+        // create groups of data points to display at once
         // e.g. we want to show the acceleration in all three axes at once
         let groupsBig = createGroupsBig(t02, t15);
         let groupsSmall = createGroupsSmall(t02, t15);
@@ -79,10 +78,12 @@
                 let name, tmpGroups, fc;
 
                 if (i === 0) {
+                    // big line chart
                     fc = linechartPlotBig();
                     name = "#line-chart-big";
                     tmpGroups = groupsBig;
                 } else {
+                    // small line chart
                     fc = linechartPlot();
                     name = "#line-chart-" + i;
                     tmpGroups = groupsSmall;

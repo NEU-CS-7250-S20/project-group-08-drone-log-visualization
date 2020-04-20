@@ -1,12 +1,16 @@
 function linechartPlotBig() {
 
     const BRUSHING_STRING = "brushing";
+    const DATA_COLOR = [
+        "#4477AA",
+        "#66CCEE",
+        "#228833"
+    ];
 
     // width and height will be computed automatically
     let width = null, height = null, widthMinusMargins = null, heightMinusMargins = null, svg = null, xScale, yScale,
         lines, extent = null;
     let margin = {top: 20, right: 5, bottom: 20, left: 30};
-    let dataColor = "red";
     let dataName="altitude";
     let dataLegend = "Altitude [m]";
     let dataSource = null;
@@ -60,16 +64,7 @@ function linechartPlotBig() {
                 scales.push(50.0); 
             else
                 scales.push(100.0);
-        }        
-
-        dataColor = [];
-        for (let i = 0; i < dataLen; i++) {
-            dataColor.push(colorMap(i));
-        }  
-        dataColor = [ 
-            "#4477AA",
-            "#66CCEE",
-            "#228833"]
+        }
 
         // get the size of the container
         setWidthHeightAndWHMinusMargins();
@@ -236,7 +231,7 @@ function linechartPlotBig() {
                 .datum(dataSource[i])
                 .attr("class", "line")
                 .attr("fill", "none")
-                .attr("stroke", dataColor[i])
+                .attr("stroke", DATA_COLOR[i])
                 .attr("stroke-width", 2)
                 .attr("d", tmpLineObj);
 
@@ -292,7 +287,7 @@ function linechartPlotBig() {
                     .attr("cx", widthMinusMargins / (dataLen + 1) * i)
                     .attr("cy", -10)
                     .attr("r", 6)
-                    .style("fill", dataColor[i - 1])
+                    .style("fill", DATA_COLOR[i - 1])
             );
             yLegendTexts.push(
                 svg.append("text")
@@ -333,7 +328,7 @@ function linechartPlotBig() {
             .attr("r", 7)
             .style("stroke", function(d) {
                 let tmpIndex = dataName.findIndex((element) => element === d);
-                return dataColor[tmpIndex];
+                return DATA_COLOR[tmpIndex];
             })
             .style("fill", "none")
             .style("stroke-width", "0px")
@@ -415,13 +410,13 @@ function linechartPlotBig() {
             for (let i = 0; i < dataLen; i++) {
                 line[i]
                     .select(".line")
-                    //.transition()
                     .attr("d", d3.line()
                     .x(function(d) { return xScale(d.time) })
                     .y(function(d) { return yScale(d[dataName[i]] * scales[i]) })
                 );  
             }
-            
+            let dispatchString = Object.getOwnPropertyNames(selectionDispatcher._)[0];
+            selectionDispatcher.call(dispatchString, this, [minTime, maxTime]);
         });
 
         // resize figure on window resize event
@@ -514,12 +509,6 @@ function linechartPlotBig() {
 
     }
 
-    chart.dataColor = function(_) {
-        if (!arguments.length) return dataColor;
-        dataColor = _;
-        return chart;
-    };
-
     chart.dataName = function(_) {
         if (!arguments.length) return dataName;
         dataName = _;
@@ -533,11 +522,8 @@ function linechartPlotBig() {
     };
 
     chart.updateSelection = function(selectedData) {
-
         if (!arguments.length) return;
-
         brushingDispatcher.call(BRUSHING_STRING, this, selectedData);
-
     };
 
     chart.moveHighlight = function(time) {

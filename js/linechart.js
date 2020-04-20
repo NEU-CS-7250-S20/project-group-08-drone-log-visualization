@@ -1,32 +1,7 @@
 function linechartPlot() {
 
     const BRUSHING_STRING = "brushing";
-
-    // width and height will be computed automatically
-    let width = null, height = null, widthMinusMargins = null, heightMinusMargins = null, svg = null, xScale, yScale,
-        lines, extent = null;
-    let margin = {top: 20, right: 5, bottom: 20, left: 30};
-    let dataColor = "red";
-    let dataName="altitude";
-    let dataLegend = "Altitude [m]";
-    let dataSource = null;
-
-    let data2draw, minTime, maxTime, selectionDispatcher;
-    let brushingDispatcher = d3.dispatch(BRUSHING_STRING);
-
-    function chart(selector, group, groups, index) {
-
-        // get a categorical color scheme
-        let colorMap = d3.scaleOrdinal(d3.schemeSet1);
-
-        // get information about what we're plotting
-        let dataLen = group.keys.length;
-        dataLegend = group.legends;
-        dataName = group.keys;
-        dataSource = group.source;
-
-        dataColor = [];
-        dataColor = [ 
+    const DATA_COLOR = [
         "#EE6677",
         "#BB5566",
         "#004488",
@@ -37,10 +12,27 @@ function linechartPlot() {
         "#882255",
         "#661100",
         "#6699CC",
-        "#888888"]
-        for (let i = 0; i < dataLen; i++) {
-            dataColor.push(colorMap(i));
-        }
+        "#888888"
+    ];
+
+    // width and height will be computed automatically
+    let width = null, height = null, widthMinusMargins = null, heightMinusMargins = null, svg = null, xScale, yScale,
+        lines, extent = null;
+    let margin = {top: 20, right: 5, bottom: 20, left: 30};
+    let dataName="altitude";
+    let dataLegend = "Altitude [m]";
+    let dataSource = null;
+
+    let data2draw, minTime, maxTime, selectionDispatcher;
+    let brushingDispatcher = d3.dispatch(BRUSHING_STRING);
+
+    function chart(selector, group, groups, index) {
+
+        // get information about what we're plotting
+        let dataLen = group.keys.length;
+        dataLegend = group.legends;
+        dataName = group.keys;
+        dataSource = group.source;
 
         // get the size of the container
         setWidthHeightAndWHMinusMargins();
@@ -65,7 +57,7 @@ function linechartPlot() {
                 let group = null;
                 let name = d3.select(this).property("value");
 
-                for (i = 0; i < groups.length; i++) {
+                for (let i = 0; i < groups.length; i++) {
                     if (groups[i].name === name) {
                         group = groups[i];
                     }
@@ -98,7 +90,7 @@ function linechartPlot() {
         let minData = new Array(dataLen);
         let maxData = new Array(dataLen);
 
-        for (i = 0; i < dataLen; i++) {
+        for (let i = 0; i < dataLen; i++) {
             data2draw[i] = [];
         }
 
@@ -118,8 +110,8 @@ function linechartPlot() {
         minTime = d3.min(timeStep);
         maxTime = d3.max(timeStep);
 
-        minY = d3.min(minData);
-        maxY = d3.max(maxData);   
+        let minY = d3.min(minData);
+        let maxY = d3.max(maxData);
 
         // Set proper range for x axis
         xScale = d3.scaleLinear()
@@ -189,7 +181,7 @@ function linechartPlot() {
                 .datum(dataSource)
                 .attr("class", "line")
                 .attr("fill", "none")
-                .attr("stroke", dataColor[i])
+                .attr("stroke", DATA_COLOR[i])
                 .attr("stroke-width", 2)
                 .attr("d", tmpLineObj);
 
@@ -245,7 +237,7 @@ function linechartPlot() {
                     .attr("cx", widthMinusMargins / (dataLen + 1) * i)
                     .attr("cy", -10)
                     .attr("r", 6)
-                    .style("fill", dataColor[i - 1])
+                    .style("fill", DATA_COLOR[i - 1])
             );
             yLegendTexts.push(
                 svg.append("text")
@@ -286,7 +278,7 @@ function linechartPlot() {
             .attr("r", 7)
             .style("stroke", function(d) {
                 let tmpIndex = dataName.findIndex((element) => element === d);
-                return dataColor[tmpIndex];
+                return DATA_COLOR[tmpIndex];
             })
             .style("fill", "none")
             .style("stroke-width", "0px")
@@ -466,12 +458,6 @@ function linechartPlot() {
         return chart;
 
     }
-
-    chart.dataColor = function(_) {
-        if (!arguments.length) return dataColor;
-        dataColor = _;
-        return chart;
-    };
 
     chart.dataName = function(_) {
         if (!arguments.length) return dataName;
