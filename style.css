@@ -215,3 +215,12 @@ html, body, #map {
 
 .console-text-style { font-family: times, "Times New Roman", sans-serif; font-size:12px}
 
+#map-slider .axis text {
+	font-weight: bold;
+	fill: #3ba800;
+}
+
+#map-slider .slider text {
+	font-weight: bold;
+	fill: red;
+}
