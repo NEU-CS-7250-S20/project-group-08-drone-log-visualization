@@ -43,9 +43,7 @@
     
     
     <h1>Motivation</h1>
-    
-    <p><em>Summary of user needs and motivating questions.</em></p>
-    
+
     Autonomous unmanned aerial vehicles are sophisticated systems with hardware, software, and humans working together. 
     For this reason, during research and development, it is crucial to have a visualization tool that can help verify system correctness, 
     identify possible errors or anomalies of the system for improvements. Some visualizations already exist but often lack a visualization-based approach. 
@@ -56,9 +54,7 @@
 
     
     <h1>Visualization</h1>
-    
-    <p><em>Include the interactive visualization as part of this page. Static example follows.</em></p>
-    
+
   </div>
   
   <!-- Your visualization here -->
@@ -97,36 +93,42 @@
   <div class = "content-column">
 
     <h1>Demo Video</h1>
-    
-    <p><em>Embedded MP4 demo video using the HTML5 &lt;video&gt; tag. For example, this screen recording Prof. Cody Dunne made of Mike Bostock's flexible transitions in D3 slide:</em></p>
-    
+
     <video controls width="100%">
-      <source src="http://www.ccs.neu.edu/home/cody/courses/shared/d3-flexible-transitions.mp4" type="video/mp4">
+      <source src="files/video.mp4" type="video/mp4">
       <p>Your browser doesn't support HTML5 video. Here is
-       a <a href="http://www.ccs.neu.edu/home/cody/courses/shared/d3-flexible-transitions.mp4">link to the video</a> instead.</p>
+       a <a href="files/video.mp4">link to the video</a> instead.</p>
     </video>
 
     <h1>Visualization explanation</h1>
-    
-    <p><em>Basic overview, UI walk-through, and linked presentation slides.</em></p>
+
+    The visualization contains a map, a big line chart, seven small line charts and a log console.
+    The map shows the flight path of the drone and we can use the slider in the bottom of the map to limit the range of time being shows.
+    Another way of selecting a time range is to click on one of the markers that designates a problem in the flight (e.g. GPS error or ground link error).
+    The selection can be cancelled using the Reset Selection button.
+    The big line chart can display up to three attributes, whereas the small line charts each show only one attribute.
+    Selecting which attribute to display can be accomplished through the dropdown menu above each line chart.
+    Similarly to the map, the line charts support selecting a time range by drawing a box over the chart.
+    Finally, the console in the bottom left displays the logged messages. We have ping (Smon) and communication (Comm) messages.
+    These can be filtered using the button above the log. <br>
+
+    <a href="https://docs.google.com/presentation/d/1BSc_S6LyeC1zw-qO5d_V07wtC3kvMK11nYmHNNzFtNA">Link to presentation slides</a>
     
     <h1>Acknowledgments</h1>
 
-    <p><em>List here where any code, packages/libraries, text, images, designs, etc. that you leverage come from.</em></p>
-    
     <ul>
       <li><a href="https://d3js.org/">D3: Data-Driven Documents</a> by Mike Bostock.</li>
       <li><a href="https://codepo8.github.io/css-fork-on-github-ribbon/#">Pure CSS responsive "Fork me on GitHub" ribbon</a> by Chris Heilmann.</li>
-      <li><a href="https://stackoverflow.com/questions/21842384/importing-data-from-multiple-csv-files-in-d3">Load multiple files at the same time.</a></li>
-      <li><a href="https://developers.google.com/maps/documentation/javascript/tutorial">Google Maps javascript API.</a></li>
-      <li><a href="https://bl.ocks.org/johnwalley/e1d256b81e51da68f7feb632a53c3518">Slider tutorial.</a></li>
-      <li><a href="https://github.com/johnwalley/d3-simple-slider">Slider library.</a></li>
-      <li><a href="https://bl.ocks.org/d3noob/c506ac45617cf9ed39337f99f8511218">Simple graph with grid lines in v4.</a></li>
-      <li><a href="https://www.d3-graph-gallery.com/graph/custom_legend.html">Building legends in d3.js.</a></li>
-      <li><a href="https://www.d3-graph-gallery.com/graph/line_brushZoom.html">Line chart with zoom in d3.js.</a></li>
-      <li><a href="http://bl.ocks.org/williaster/10ef968ccfdc71c30ef8?fbclid=IwAR0_lHlF2CTFXSeZluFu9OHC1qGud08Is1XWyVN58bNI6-xr0nrGL_F38OM">Drop down menu.</a></li>
+      <li><a href="https://stackoverflow.com/questions/21842384/importing-data-from-multiple-csv-files-in-d3">Load multiple files at the same time</a></li>
+      <li><a href="https://developers.google.com/maps/documentation/javascript/tutorial">Google Maps javascript API</a></li>
+      <li><a href="https://bl.ocks.org/johnwalley/e1d256b81e51da68f7feb632a53c3518">Slider tutorial</a></li>
+      <li><a href="https://github.com/johnwalley/d3-simple-slider">Slider library</a></li>
+      <li><a href="https://bl.ocks.org/d3noob/c506ac45617cf9ed39337f99f8511218">Simple graph with grid lines in v4</a></li>
+      <li><a href="https://www.d3-graph-gallery.com/graph/custom_legend.html">Building legends in d3.js</a></li>
+      <li><a href="https://www.d3-graph-gallery.com/graph/line_brushZoom.html">Line chart with zoom in d3.js</a></li>
+      <li><a href="http://bl.ocks.org/williaster/10ef968ccfdc71c30ef8?fbclid=IwAR0_lHlF2CTFXSeZluFu9OHC1qGud08Is1XWyVN58bNI6-xr0nrGL_F38OM">Drop down menu</a></li>
       <li><a href="https://css-tricks.com/preventing-a-grid-blowout/">Preventing a Grid Layout Blowout</a></li>
-      <li><a href=" https://bl.ocks.org/larsenmtl/e3b8b7c2ca4787f77d78f58d41c3da91">Mouseover effects for line charts.</a></li>
+      <li><a href=" https://bl.ocks.org/larsenmtl/e3b8b7c2ca4787f77d78f58d41c3da91">Mouseover effects for line charts</a></li>
       <li><a href="https://personal.sron.nl/~pault/">Colour schemes and templates by Paul Tol</a></li>
     </ul>
     
