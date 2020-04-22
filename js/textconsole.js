@@ -26,15 +26,15 @@ function consoleDisplay() {
             .attr("class", "log-console");
 
         // add dropdown menu for filtering messages
-        let startStep = 0
-        let currentStep = data.length
-        let filter_level = "Filter Smon+Comm"
+        let startStep = 0;
+        let currentStep = data.length;
+        let filterLevel = FILTER_GROUPS[0];
         let dropdown = d3.select(selector)
             .insert("select", "svg")
             .attr("style", "display: block;")
             .on("change", function() {
-                filter_level = d3.select(this).property("value");
-                filterText(filter_level);
+                filterLevel = d3.select(this).property("value");
+                filterText(filterLevel);
             });            
 
         dropdown.selectAll("option")
@@ -58,12 +58,8 @@ function consoleDisplay() {
             .html("");
 
         // add console text
-        let text2display = "";
-        for (let i = 0; i < currentStep; i++)
-        {
-            // Default is filter Comm + Smon
-            filterText(FILTER_GROUPS[0]);
-        }
+        // Default is filter Comm + Smon
+        filterText(filterLevel);
 
         // Update the text given boundaries
         brushingDispatcher.on(BRUSHING_STRING, function(d) {
@@ -79,14 +75,13 @@ function consoleDisplay() {
             currentStep = indices[1];
 
             // update text
-            text2display = "";
-            filterText(filter_level)
+            filterText(filterLevel)
 
         }
 
         function filterText(level) {
             // filter various types of messages
-            text2display = "";
+            let text2display = "";
 
             for (let i = startStep; i < currentStep; i++) {
                 if (level === FILTER_GROUPS[1]) {
